@@ -1,16 +1,18 @@
 package main;
 
+import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.util.Hashtable;
 import java.util.Iterator;
 
+import page.Page;
 import exceptions.DBAppException;
 import exceptions.DBEngineException;
 
 public class DBApp implements DBMainInterface{
 
-	public static void main(String[] args) {
+	public static void main(String[] args) throws Exception {
 		// TODO Auto-generated method stub
-
 	}
 
 	@Override
