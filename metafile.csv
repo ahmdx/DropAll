@@ -1,1 +1,4 @@
- 
+Table Name, Column Name, Column Type, Key, Indexed, ReferencesTable,  ReferencesColumn
+shit, False, ID, java.lang.Integer, 
+shit, False, name, java.lang.String, 
+shit, False, DOB, java.util.Date, 
