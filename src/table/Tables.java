@@ -4,6 +4,9 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.PrintWriter;
 import java.util.Hashtable;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 import exceptions.DBAppException;
 
 public class Tables {
@@ -24,9 +27,16 @@ public class Tables {
 			writer = new PrintWriter(csvFile);
 
 			String[] hash;
-			String[] foreignKey;
+			String error=referencesTableFormat(htblColNameRefs);
 			String[] tableColumns = htblColNameType.toString().split(",");
-			String[] foreignColumns = htblColNameRefs.toString().split(",");
+			
+			if(error!=null){
+				System.err.println("Error in referencing another table");
+				System.err.println("Please specify the column name you want to refer to in: "+nameHelper(error));
+				System.err.println("To specifiy column place a \".\" after the table name");
+				return;
+			}
+
 
 			for (int i = 0; i < formatList.length; i++) {
 				if (i == formatList.length - 1) {
@@ -40,10 +50,16 @@ public class Tables {
 			for (int i = 0; i < tableColumns.length; i++) {
 				hash = tableColumns[i].split("=");
 				writer.print(strTableName + "," + " "); // writing table name
-				writer.print(keyHelper(strKeyColName, nameHelper(hash[0].trim()))); // writing if column is PK
+				writer.print(keyHelper(strKeyColName, nameHelper(hash[0]))); // writing if column is PK
 				writer.print(nameHelper(hash[0].trim()) + "," + " "); // writing column name
+				
+				if(typeHelper(hash[1].trim()) == hash[1].trim()){
+					System.err.println("unkown data type in: "+hash[0].trim()+" ==> "+hash[1].trim());
+					return;
+				}
+				
 				writer.print(typeHelper(hash[1].trim())); // writing column type
-				//writer.print(fkHelper(htblColNameRefs.containsKey(hash[0]),hash[0], i));
+				writer.print(fkHelper(htblColNameRefs, nameHelper(hash[0])));
 				writer.println();
 			}
 			writer.close();
@@ -58,54 +74,85 @@ public class Tables {
 	private String typeHelper(String x) {
 		char firstChar = x.toLowerCase().charAt(0);
 		switch (firstChar) {
-		case 'i':
+		case 'i':							//integer
 			return "java.lang.Integer, ";
-		case 'd':
+		case 'd':							//date
 			return "java.util.Date, ";
-		case 'b':
+		case 'b':							//boolean
 			return "java.lang.Boolean, ";
-		case 's':
-		case 'v':
+		case 's':							//string
+		case 'v':							//varchar
 			return "java.lang.String, ";
-		default:
-			return "error";
-		}
-	}
-
-	private String nameHelper(String x) { // adjusts the name key in a hashtable
-		if(x.charAt(0)=='{'){
-			return x.substring(1);
-		} else {
+		default:							//not in the list
 			return x;
 		}
 	}
 
+	private String nameHelper(String x) { // adjusts the name key in a hashtable
+		if(x.startsWith("{") && x.endsWith("}")){
+			return x.substring(1,x.length()-1);
+		} else {
+				if(x.startsWith("{")){
+					return x.substring(1);
+				}else{
+						if(x.endsWith("}")){
+							return x.substring(0,x.length()-1);
+						} else{
+							return x;
+						}
+				
+				}
+		}
+	}
+
 	private String keyHelper(String key, String current) {
-		if (key.trim()==current.trim()) {
+		if (key.trim().equals(current.trim())) {
 			return "True, ";
 		} else {
 			return "False, ";
 		}
 	}
 
-	/*	private String fkHelper(String key, String current) {
-		if (key==current) {
-			return nameHelper(key, index);
+		private String fkHelper(Hashtable<String,String> refsTable, String current) {
+		if (refsTable.containsKey(current.trim())) {
+			return refsTable.get(current.trim());
 		} else {
 			return "null";
 		}
-	}*/
+	}
+		
+		private String referencesTableFormat(Hashtable<String, String> x) {
+			String[] hash;
+			String[] foreignColumns = x.toString().split(",");
+			
+			String pattern = "(\\w)(\\.)(\\w)";
+			Pattern regexp = Pattern.compile(pattern);
+			Matcher checker;		
+			if(x.isEmpty()){
+				return "empty";
+			}
+			
+			for(int i=0; i<foreignColumns.length;i++){
+				hash=foreignColumns[i].split("=");
+				 checker=regexp.matcher(hash[1]);	
+				if(!checker.find()){
+					return hash[1];
+				} 
+			}
+			return null;	
+		}
 
 	public static void main(String[] args) throws DBAppException {
 		// TODO Auto-generated method stub
 		Tables t = new Tables();
 		Hashtable<String, String> cols = new Hashtable<String, String>();
 		cols.put("ID", "int");
-		cols.put("name", "string");
+		cols.put("name", "date");
 		cols.put("DOB", "date");
 		Hashtable<String, String> refs = new Hashtable<String, String>();
-
-		t.createTable("shit", cols, refs, "ID");
+		refs.put("name", "user.fname");
+		refs.put("ID","employee.ID");
+		t.createTable("demo", cols, refs, "name");
 
 	}
 
