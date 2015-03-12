@@ -11,9 +11,6 @@ import java.io.Serializable;
 
 public class Page implements Serializable {
 
-	/**
-	 * 
-	 */
 	private static final long serialVersionUID = 1L;
 	private final int pageSize = 20;
 	private int index;
@@ -26,28 +23,62 @@ public class Page implements Serializable {
 		this.pageName = pageName;
 	}
 
-	public final void insertRowIntoPage(String row) {
-		this.records[index] = row;
-		index++;
+	public final void write(String record) {
+		this.records[this.index] = record;
+		this.index++;
 	}
 
-	public final void savePage(String pageName) throws FileNotFoundException,
-			IOException {
-		ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(
-				new File(this.pageName+".ser")));
-		oos.writeObject(this);
-		oos.close();
+	public final String read(int index) {
+		if (index < 0 || index > pageSize)
+			return null;
+		return this.records[index];
 	}
 
-	public static final Page loadPage(String pageName) throws FileNotFoundException,
-			IOException, ClassNotFoundException {
-		ObjectInputStream ois = new ObjectInputStream(new FileInputStream(
-				new File(pageName+".ser")));
-		Page page = (Page) ois.readObject();
-		ois.close();
-		return page;
+	public final boolean remove(int index) {
+		if (index < 0 || index > pageSize)
+			return false;
+		this.records[index] = null;
+		return true;
+	}
+
+	public final boolean save() {
+		try {
+			ObjectOutputStream oos = new ObjectOutputStream(
+					new FileOutputStream(new File("pages/" + this.pageName
+							+ ".page")));
+			oos.writeObject(this);
+			oos.close();
+		} catch (IOException e) {
+			return false;
+		}
+		return true;
+	}
+
+	public static final Page load(String pageName) {
+		try {
+			ObjectInputStream ois = new ObjectInputStream(new FileInputStream(
+					new File("pages/" + pageName + ".page")));
+			Page page = (Page) ois.readObject();
+			ois.close();
+			return page;
+		} catch (Exception e) {
+			return null;
+		}
 	}
 	
+	public static final boolean delete(String pageName) {
+		File f = new File("pages/" + pageName + ".page");
+		return f.delete();
+	}
+
+	public final String[] readContent() {
+		return this.records;
+	}
+
+	public final boolean isFull() {
+		return this.index == this.records.length;
+	}
+
 	public String toString() {
 		String result = "";
 		for (String row : this.records) {
