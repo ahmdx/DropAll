@@ -10,7 +10,7 @@ import java.util.regex.Pattern;
 import exceptions.DBAppException;
 
 public class Tables {
-	private String format = "Table Name, Column Name, Column Type, Key, Indexed, ReferencesTable, ReferencesColumn";
+	private String format = "Table Name, Primary Key, Column Name, Column Type, Indexed, References";
 	private String[] formatList = format.split(",");
 
 	public Tables() {
@@ -59,7 +59,7 @@ public class Tables {
 				}
 				
 				writer.print(typeHelper(hash[1].trim())); // writing column type
-				writer.print(fkHelper(htblColNameRefs, nameHelper(hash[0])));
+				writer.print(fkHelper(htblColNameRefs, nameHelper(hash[0]))); //writing references
 				writer.println();
 			}
 			writer.close();

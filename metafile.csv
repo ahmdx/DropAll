@@ -1,4 +1,4 @@
-Table Name, Column Name, Column Type, Key, Indexed, ReferencesTable,  ReferencesColumn
+Table Name, Primary Key, Column Name, Column Type, Indexed,  References
 demo, False, ID, java.lang.Integer, employee.ID
 demo, True, name, java.util.Date, user.fname
 demo, False, DOB, java.util.Date, null
