@@ -12,7 +12,9 @@ import exceptions.DBAppException;
 public class Tables {
 	private String format = "Table Name, Primary Key, Column Name, Column Type, Indexed, References";
 	private String[] formatList = format.split(",");
-
+	private Hashtable<String, String> tableColumns;
+	private Hashtable<String, String> tableReferences;
+	
 	public Tables() {
 
 	}
@@ -21,6 +23,10 @@ public class Tables {
 			Hashtable<String, String> htblColNameType,
 			Hashtable<String, String> htblColNameRefs, String strKeyColName)
 					throws DBAppException {
+		
+		tableColumns = htblColNameType;
+		tableReferences = htblColNameRefs;
+		
 		File csvFile = new File("metafile.csv");
 		PrintWriter writer;
 		try {
@@ -59,6 +65,7 @@ public class Tables {
 				}
 				
 				writer.print(typeHelper(hash[1].trim())); // writing column type
+				writer.print("False, "); //writing index
 				writer.print(fkHelper(htblColNameRefs, nameHelper(hash[0]))); //writing references
 				writer.println();
 			}
@@ -155,5 +162,15 @@ public class Tables {
 		t.createTable("demo", cols, refs, "name");
 
 	}
+
+	public Hashtable<String, String> getTableColumns() {
+		return tableColumns;
+	}
+
+
+	public Hashtable<String, String> getTableReferences() {
+		return tableReferences;
+	}
+
 
 }
