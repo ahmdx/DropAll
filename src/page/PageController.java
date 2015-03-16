@@ -3,7 +3,7 @@ package page;
 import java.util.ArrayList;
 import java.util.UUID;
 
-public class Pages {
+public class PageController {
 	private ArrayList<String> pages = new ArrayList<String>();
 	private String currentPage = "";
 
@@ -35,7 +35,6 @@ public class Pages {
 			this.createPage();
 			page = Page.load(this.currentPage);
 		}
-
 		for (String record : records) {
 			if (page.isFull()) {
 				page.save();
@@ -76,21 +75,18 @@ public class Pages {
 
 	public final Page[] getAllPages() {
 		Page[] pages = new Page[this.pages.size()];
-		for (int i = 0; i < pages.length; i++) {
+		for (int i = 0; i < pages.length; i++)
 			pages[i] = Page.load(this.pages.get(i));
-		}
 		return pages;
 	}
 
 	public final void deleteAllPages() {
-		for (String page : this.pages) {
+		for (String page : this.pages)
 			Page.delete(page);
-		}
 		this.pages.clear();
 		this.currentPage = "";
 	}
 
 	public static void main(String[] args) {
-
 	}
 }
