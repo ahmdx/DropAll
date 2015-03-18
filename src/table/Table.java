@@ -4,10 +4,10 @@ import java.util.Hashtable;
 import page.PageController;
 import exceptions.DBAppException;
 
-public class Tables {
+public class Table {
 	private PageController page = new PageController(); 
 	
-	public Tables() {
+	public Table() {
 		
 	}
 	
