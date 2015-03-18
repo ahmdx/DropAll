@@ -163,15 +163,16 @@ public class TablesController {
 
 	public static void main(String[] args) throws DBAppException {
 		// TODO Auto-generated method stub
-		Tables t = new Tables();
+		TablesController t = new TablesController();
 		Hashtable<String, String> cols = new Hashtable<String, String>();
 		cols.put("ID", "int");
 		cols.put("name", "date");
 		cols.put("DOB", "date");
-		Hashtable<String, String> refs = new Hashtable<String, String>();
-		refs.put("name", "user.fname");
-		refs.put("ID", "employee.ID");
-		t.createTable("demo", cols, refs, "name");
+		System.out.println(cols);
+//		Hashtable<String, String> refs = new Hashtable<String, String>();
+//		refs.put("name", "user.fname");
+//		refs.put("ID", "employee.ID");
+//		t.createTable("demo", cols, refs, "name");
 
 	}
 

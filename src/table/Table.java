@@ -13,7 +13,7 @@ public class Table {
 	
 	public void insertIntoTable(String strTableName,
 			Hashtable<String,String> htblColNameValue)throws DBAppException{
-		page
+//		page
 		
 	}
 	
