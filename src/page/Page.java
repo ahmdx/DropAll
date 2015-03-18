@@ -2,33 +2,34 @@ package page;
 
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
+//import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.Serializable;
+import java.util.Hashtable;
 
 public class Page implements Serializable {
 
 	private static final long serialVersionUID = 1L;
 	private final int pageSize = 20;
 	private int index;
-	private String[] records;
+	private Hashtable<String, String>[] records;
 	private final String pageName;
 
 	public Page(String pageName) {
-		this.records = new String[pageSize];
+		this.records = new Hashtable[pageSize];
 		this.index = 0;
 		this.pageName = pageName;
 	}
 
-	public final void write(String record) {
+	public final void write(Hashtable<String, String> record) {
 		this.records[this.index] = record;
 		this.index++;
 	}
 
-	public final String read(int index) {
+	public final Hashtable<String, String> read(int index) {
 		if (index < 0 || index > pageSize)
 			return null;
 		return this.records[index];
@@ -71,7 +72,7 @@ public class Page implements Serializable {
 		return f.delete();
 	}
 
-	public final String[] readContent() {
+	public final Hashtable<String, String>[] readContent() {
 		return this.records;
 	}
 
@@ -81,7 +82,7 @@ public class Page implements Serializable {
 
 	public String toString() {
 		String result = "";
-		for (String row : this.records) {
+		for (Hashtable<String, String> row : this.records) {
 			if (row != null)
 				result += row + "\n";
 		}
