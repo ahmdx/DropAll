@@ -91,20 +91,20 @@ public class PageController implements Serializable {
 	}
 
 	public static void main(String[] args) {
-//		PageController pages = new PageController();
-//		Hashtable<String, String>[] row = new Hashtable[21];
-//		for (int i = 0; i < 20; i++) {
-//			row[i] = new Hashtable<String, String>();
-//			row[i].put("key #" + i, "" + i);
-//		}
-//
-//		pages.writeToPage(row);
-//
-//		Page[] pag = pages.getAllPages();
-//		for (Page p : pag) {
-//			System.out.println(p);
-//		}
-//
-//		pages.deleteAllPages();
+		PageController pages = new PageController();
+		int i = 100;
+		Hashtable<String, String>[] r = new Hashtable[101];
+		while(i-- > 0) {
+			r[i] = new Hashtable<String, String>();
+			r[i].put("key #" + i, "" + i);
+		}
+		pages.writeToPage(r);
+		
+		Page[] pag = pages.getAllPages();
+		for (Page p : pag){
+			System.out.println(p);
+		}
+		
+		//pages.deleteAllPages();
 	}
 }
