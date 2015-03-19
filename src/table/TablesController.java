@@ -25,8 +25,8 @@ public class TablesController {
 	public void createTable(String strTableName,
 			Hashtable<String, String> htblColNameType,
 			Hashtable<String, String> htblColNameRefs, String strKeyColName)
-					throws DBAppException {
-		
+			throws DBAppException {
+
 		tableColumns = htblColNameType;
 		tableReferences = htblColNameRefs;
 
@@ -77,12 +77,13 @@ public class TablesController {
 				}
 
 				writer.print(typeHelper(hash[1].trim())); // writing column type
-				writer.print("False, "); //writing index
-				writer.print(fkHelper(htblColNameRefs, nameHelper(hash[0]))); //writing references
+				writer.print("False, "); // writing index
+				writer.print(fkHelper(htblColNameRefs, nameHelper(hash[0]))); // writing
+																				// references
 				writer.println();
 			}
 			writer.close();
-			tableObject =  new Table(strTableName);
+			tableObject = new Table(strTableName);
 			allTables.add(tableObject);
 
 		} catch (FileNotFoundException e) {
@@ -162,48 +163,43 @@ public class TablesController {
 		}
 		return null;
 	}
-	
+
 	public void insertIntoTable(String strTableName,
-			Hashtable<String,String> htblColNameValue)throws DBAppException{
-		
-		int index= searchArraylist(allTables, strTableName) ;
-		
-		if(index != -1){
+			Hashtable<String, String> htblColNameValue) throws DBAppException {
+
+		int index = searchArraylist(allTables, strTableName);
+
+		if (index != -1) {
 			allTables.get(index).getPage().writeToPage(htblColNameValue);
 		} else {
-			System.err.println("Please ensure that the table name: \""+strTableName+"\" is correct");
+			System.err.println("Please ensure that the table name: \""
+					+ strTableName + "\" is correct");
 		}
-			
+
 	}
-	
-/*	public void insertIntoTable(String strTableName,
-			Hashtable<String,String>[] htblColNameValue)throws DBAppException{
-		
-		int index= searchArraylist(allTables, strTableName) ;
-		
-		if(index != -1){
-			allTables.get(index).getPage().writeToPage(htblColNameValue);
-		} else {
-			System.err.println("Please ensure that the table name: \""+strTableName+"\" is correct");
-		}
-			
-	}
-	
-*/	
-	private int searchArraylist(ArrayList<Table> t , String table){
-		for(int i=0; i<allTables.size(); i++){
-			if(allTables.get(i).getTableName().equals(table)){
+
+	/*
+	 * public void insertIntoTable(String strTableName,
+	 * Hashtable<String,String>[] htblColNameValue)throws DBAppException{
+	 * 
+	 * int index= searchArraylist(allTables, strTableName) ;
+	 * 
+	 * if(index != -1){
+	 * allTables.get(index).getPage().writeToPage(htblColNameValue); } else {
+	 * System.err.println("Please ensure that the table name: \""+strTableName+
+	 * "\" is correct"); }
+	 * 
+	 * }
+	 */
+	private int searchArraylist(ArrayList<Table> t, String table) {
+		for (int i = 0; i < allTables.size(); i++) {
+			if (allTables.get(i).getTableName().equals(table)) {
 				return i;
 			}
-				
+
 		}
 		return -1;
 	}
-	
-	
-	
-	
-
 
 	public static void main(String[] args) throws DBAppException {
 		// TODO Auto-generated method stub
@@ -216,13 +212,12 @@ public class TablesController {
 		refs.put("name", "user.fname");
 		refs.put("ID", "employee.ID");
 		t.createTable("demo", cols, refs, "name");
-		
+
 		Hashtable<String, String> val = new Hashtable<String, String>();
 		val.put("ID", "1");
 		val.put("name", "soso");
 		val.put("DOB", "1/2/3");
-		
-		
+
 		t.insertIntoTable("demo", val);
 
 	}

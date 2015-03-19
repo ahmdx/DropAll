@@ -7,10 +7,10 @@ import exceptions.DBAppException;
 public class Table {
 	private PageController page;
 	private String tableName;
-	
+
 	public Table(String name) {
-		this.tableName= name;
-		this.page =  new PageController();
+		this.tableName = name;
+		this.page = new PageController();
 	}
 
 	public PageController getPage() {
@@ -20,9 +20,5 @@ public class Table {
 	public String getTableName() {
 		return tableName;
 	}
-	
 
-
-
-	
 }

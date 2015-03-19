@@ -1,10 +1,11 @@
 package page;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Hashtable;
 import java.util.UUID;
 
-public class PageController {
+public class PageController implements Serializable {
 	private ArrayList<String> pages = new ArrayList<String>();
 	private String currentPage = "";
 
