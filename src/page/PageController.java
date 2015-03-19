@@ -1,10 +1,11 @@
 package page;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Hashtable;
 import java.util.UUID;
 
-public class PageController {
+public class PageController implements Serializable {
 	private ArrayList<String> pages = new ArrayList<String>();
 	private String currentPage = "";
 
@@ -92,7 +93,7 @@ public class PageController {
 		PageController pages = new PageController();
 		int i = 100;
 		Hashtable<String, String>[] r = new Hashtable[101];
-		while(i -- > 0) {
+		while(i-- > 0) {
 			r[i] = new Hashtable<String, String>();
 			r[i].put("key #" + i, "" + i);
 		}
@@ -103,6 +104,6 @@ public class PageController {
 			System.out.println(p);
 		}
 		
-		pages.deleteAllPages();
+		//pages.deleteAllPages();
 	}
 }

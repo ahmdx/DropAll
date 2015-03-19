@@ -1,8 +1,17 @@
 package table;
 
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.io.PrintWriter;
+import java.io.Serializable;
+import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.Hashtable;
 import java.util.regex.Matcher;
@@ -11,13 +20,15 @@ import java.util.regex.Pattern;
 import page.Page;
 import exceptions.DBAppException;
 
-public class TablesController {
+public class TablesController implements Serializable {
 	private String format = "Table Name, Primary Key, Column Name, Column Type, Indexed, References";
 	private String[] formatList = format.split(",");
 	private Hashtable<String, String> tableColumns;
 	private Hashtable<String, String> tableReferences;
 	private ArrayList<Table> allTables = new ArrayList<Table>();
 	private Table tableObject;
+	private File csvFile = new File("metafile.csv");
+
 
 	public TablesController() {
 	}
@@ -30,7 +41,6 @@ public class TablesController {
 		tableColumns = htblColNameType;
 		tableReferences = htblColNameRefs;
 
-		File csvFile = new File("metafile.csv");
 		PrintWriter writer;
 		try {
 			writer = new PrintWriter(csvFile);
@@ -84,6 +94,8 @@ public class TablesController {
 			writer.close();
 			tableObject =  new Table(strTableName);
 			allTables.add(tableObject);
+			this.save();
+
 
 		} catch (FileNotFoundException e) {
 
@@ -170,26 +182,28 @@ public class TablesController {
 		
 		if(index != -1){
 			allTables.get(index).getPage().writeToPage(htblColNameValue);
+			this.save();
 		} else {
 			System.err.println("Please ensure that the table name: \""+strTableName+"\" is correct");
 		}
 			
 	}
 	
-/*	public void insertIntoTable(String strTableName,
+	public void insertIntoTable(String strTableName,
 			Hashtable<String,String>[] htblColNameValue)throws DBAppException{
 		
 		int index= searchArraylist(allTables, strTableName) ;
 		
 		if(index != -1){
 			allTables.get(index).getPage().writeToPage(htblColNameValue);
+			this.save();
 		} else {
 			System.err.println("Please ensure that the table name: \""+strTableName+"\" is correct");
 		}
 			
 	}
 	
-*/	
+	
 	private int searchArraylist(ArrayList<Table> t , String table){
 		for(int i=0; i<allTables.size(); i++){
 			if(allTables.get(i).getTableName().equals(table)){
@@ -200,30 +214,64 @@ public class TablesController {
 		return -1;
 	}
 	
+	public final boolean save() {
+		try {
+			ObjectOutputStream oos = new ObjectOutputStream(
+					new FileOutputStream(new File("tableController.table")));
+			oos.writeObject(this);
+			oos.close();
+		} catch (IOException e) {
+			return false;
+		}
+		return true;
+	}
 	
 	
+	public static final TablesController load() {
+		try {
+			ObjectInputStream ois = new ObjectInputStream(new FileInputStream(
+					new File("tableController.table")));
+			TablesController tc = (TablesController) ois.readObject();
+			ois.close();
+			return tc;
+		} catch (Exception e) {
+			e.printStackTrace();
+			return null;
+			
+		}
+	}
 	
+	private void readMetaFile()	{
+	//	InputStream fis = new FileInputStream(csvFile);
+	//	BufferedReader reader = new BufferedReader(fis);
+		
+	}
 
 
 	public static void main(String[] args) throws DBAppException {
 		// TODO Auto-generated method stub
 		TablesController t = new TablesController();
+	
 		Hashtable<String, String> cols = new Hashtable<String, String>();
 		cols.put("ID", "int");
 		cols.put("name", "date");
 		cols.put("DOB", "date");
+	
 		Hashtable<String, String> refs = new Hashtable<String, String>();
 		refs.put("name", "user.fname");
 		refs.put("ID", "employee.ID");
-		t.createTable("demo", cols, refs, "name");
+	//	t.createTable("demo", cols, refs, "name"); 
 		
 		Hashtable<String, String> val = new Hashtable<String, String>();
 		val.put("ID", "1");
 		val.put("name", "soso");
 		val.put("DOB", "1/2/3");
+
 		
-		
+		load();
 		t.insertIntoTable("demo", val);
+		
+		
 
 	}
 
