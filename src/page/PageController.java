@@ -43,7 +43,8 @@ public class PageController implements Serializable {
 				this.createPage();
 				page = Page.load(this.currentPage);
 			}
-			page.write(record);
+			if (record != null)
+				page.write(record);
 		}
 		page.save();
 	}

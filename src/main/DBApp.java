@@ -11,6 +11,13 @@ public class DBApp implements DBMainInterface{
 
 	public static void main(String[] args) throws Exception {
 		// TODO Auto-generated method stub
+		DBApp app = new DBApp();
+		app.init();
+	}
+
+	@Override
+	public void init() {
+		// TODO Auto-generated method stub
 		File pagesDirectory = new File("pages");
 		if (!pagesDirectory.exists()) {
 			try {
@@ -19,12 +26,6 @@ public class DBApp implements DBMainInterface{
 				se.printStackTrace();
 			}
 		}
-	}
-
-	@Override
-	public void init() {
-		// TODO Auto-generated method stub
-		
 	}
 
 	@Override

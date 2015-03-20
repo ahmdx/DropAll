@@ -68,7 +68,6 @@ public class TablesController implements Serializable {
 				e.printStackTrace();
 			}
 		}
-
 	}
 
 	public void insertIntoTable(String strTableName,
@@ -116,6 +115,7 @@ public class TablesController implements Serializable {
 	 * 
 	 * }
 	 */
+<<<<<<< HEAD
 
 	
 	
@@ -189,6 +189,26 @@ public class TablesController implements Serializable {
 						&& !pageIndex.contains(i + "," + j)) {
 					pageIndex.add(i + "," + j);
 				}
+=======
+
+	public void deleteFromTable(String strTableName,
+			Hashtable<String, String> htblColNameValue, String strOperator)
+			throws DBEngineException {
+		int index = searchArraylist(strTableName);
+		if (index == -1) {
+			System.err.println("Please ensure that the table name: \""
+					+ strTableName + "\" is correct");
+			return;
+		}
+		int allPagesCount = this.allTables.get(index).getController()
+				.getAllPages().length;
+		int i, j;
+		for (i = 0; i < allPagesCount; i++) {
+			for (j = 0; j < 20; j++) {
+//				if (this.allTables.get(index).getController().getPage(i)
+//						.read(j))
+//					;
+>>>>>>> dfb77b8b9efdbaa53f2b16eb712c66f0b50e7cca
 			}
 		}
 	}
@@ -383,7 +403,11 @@ public class TablesController implements Serializable {
 			writer.print(typeHelper(hash[1].trim())); // writing column type
 			writer.print("False, "); // writing index
 			writer.print(fkHelper(htblColNameRefs, nameHelper(hash[0]))); // writing
+<<<<<<< HEAD
 			// references
+=======
+																			// references
+>>>>>>> dfb77b8b9efdbaa53f2b16eb712c66f0b50e7cca
 			writer.println();
 		}
 		writer.close();
@@ -393,6 +417,15 @@ public class TablesController implements Serializable {
 
 	}
 
+<<<<<<< HEAD
+=======
+	private void readMetaFile() {
+		// InputStream fis = new FileInputStream(csvFile);
+		// BufferedReader reader = new BufferedReader(fis);
+
+	}
+
+>>>>>>> dfb77b8b9efdbaa53f2b16eb712c66f0b50e7cca
 	public static void main(String[] args) throws DBAppException {
 
 		TablesController t = new TablesController();
@@ -412,9 +445,21 @@ public class TablesController implements Serializable {
 		val.put("name", "soso");
 		val.put("DOB", "1/2/3");
 
+<<<<<<< HEAD
 		// t=load();
 		// t.insertIntoTable("demo", val);
 
+=======
+		// t = load();
+		t.insertIntoTable("demo", val);
+
+		System.out.println(t.allTables.get(t.searchArraylist("demo"))
+				.getController().getCurrentPage());
+
+		// t=load();
+		// t.insertIntoTable("demo", val);
+
+>>>>>>> dfb77b8b9efdbaa53f2b16eb712c66f0b50e7cca
 		int index = t.searchArraylist("demo");
 
 		// System.out.println(t.allTables.get(t.searchArraylist("demo")).getPage().getCurrentPage());
