@@ -66,7 +66,7 @@ public class Page implements Serializable {
 			return null;
 		}
 	}
-	
+
 	public static final boolean delete(String pageName) {
 		File f = new File("pages/" + pageName + ".page");
 		return f.delete();
@@ -87,5 +87,8 @@ public class Page implements Serializable {
 				result += row + "\n";
 		}
 		return result;
+	}
+
+	public static void main(String[] args) {
 	}
 }

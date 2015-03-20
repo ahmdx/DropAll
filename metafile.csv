@@ -1,4 +1,0 @@
-Table Name, Primary Key, Column Name, Column Type, Indexed,  References
-demo, False, ID, java.lang.Integer, False, employee.ID
-demo, True, name, java.util.Date, False, user.fname
-demo, False, DOB, java.util.Date, False, null
