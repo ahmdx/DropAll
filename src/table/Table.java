@@ -10,6 +10,15 @@ public class Table implements Serializable {
 	private String tableName;
 	private Hashtable<String, String> colTypes;
 	private Hashtable<String, String> colRefs;
+	public Hashtable<String, String> getColPK() {
+		return colPK;
+	}
+
+	public void setColPK(Hashtable<String, String> colPK) {
+		this.colPK = colPK;
+	}
+
+	private Hashtable<String, String> colPK;
 
 	public Table(String name, Hashtable<String, String> t,
 			Hashtable<String, String> r) {
@@ -18,6 +27,7 @@ public class Table implements Serializable {
 		this.controller = new PageController();
 		this.colTypes = t;
 		this.colRefs = r;
+		this.colPK = null;
 	}
 
 	public PageController getController() {

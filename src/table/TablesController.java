@@ -4,10 +4,10 @@ import java.io.*;
 import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
 import page.Page;
 import exceptions.DBAppException;
 import exceptions.DBEngineException;
+import table.Tuples;
 
 public class TablesController implements Serializable {
 	/**
@@ -28,7 +28,7 @@ public class TablesController implements Serializable {
 	public void createTable(String strTableName,
 			Hashtable<String, String> htblColNameType,
 			Hashtable<String, String> htblColNameRefs, String strKeyColName)
-			throws DBAppException {
+					throws DBAppException {
 
 		tableColumns = htblColNameType;
 		tableReferences = htblColNameRefs;
@@ -68,6 +68,8 @@ public class TablesController implements Serializable {
 				e.printStackTrace();
 			}
 		}
+		 
+
 	}
 
 	public void insertIntoTable(String strTableName,
@@ -115,12 +117,8 @@ public class TablesController implements Serializable {
 	 * 
 	 * }
 	 */
-<<<<<<< HEAD
 
-	
-	
-	//check on stropertor and handle errors
-	//handle AND and the OR operator
+	// delete only when keys in and are concat of all
 	public void deleteFromTable(String strTableName,
 			Hashtable<String, String> htblColNameValue, String strOperator)
 			throws DBEngineException {
@@ -148,69 +146,115 @@ public class TablesController implements Serializable {
 
 		int allPagesCount = this.allTables.get(index).getController()
 				.getAllPages().length;
-		ArrayList<String> pageIndex = new ArrayList<String>(1);
+		ArrayList<Tuples> pageIndex = new ArrayList<Tuples>(1);
+
+		if (strOperator == null && htblColNameValue.size() > 1) {
+			System.err
+					.println("Please choose an operator being either \"AND\" or \"OR\" when having multiple columns");
+			return;
+		}
 
 		if (htblColNameValue.equals(null) && strOperator == null) {
 			this.allTables.get(index).getController().deleteAllPages();
 			return;
-		} 
-		
+		}
+
+		if (strOperator.equals("AND")) {
 			for (int i = 0; i < allPagesCount; i++) {
-				pageSearcher(
-						this.allTables.get(index).getController().getPage(i),
-						htblColNameValue, i, pageIndex);
+				pageANDSearcher(this.allTables.get(index).getController()
+						.getPage(i), htblColNameValue, i, pageIndex);
+
 			}
-			
-			
-			
-			
-			
-			
-			if(strOperator ==  null && htblColNameValue.size()>1){
-				System.err.println("Please choose an operator being either \"AND\" or \"OR\" when having multiple columns");
-				return;
+
+			for (int i = 0; i < pageIndex.size(); i++) {
+				this.allTables
+						.get(index)
+						.getController()
+						.deleteFromPage(pageIndex.get(i).getPage(),
+								pageIndex.get(i).getIndex());
 			}
-			
-			
-		
+		}
+
+		if (strOperator.equals("OR")) {
+			for (int i = 0; i < allPagesCount; i++) {
+				pageORSearcher(this.allTables.get(index).getController()
+						.getPage(i), htblColNameValue, i, pageIndex);
+			}
+
+			for (int i = 0; i < pageIndex.size(); i++) {
+				this.allTables
+						.get(index)
+						.getController()
+						.deleteFromPage(pageIndex.get(i).getPage(),
+								pageIndex.get(i).getIndex());
+			}
+		}
 
 	}
 
-	private void pageSearcher(Page p,
-			Hashtable<String, String> htblColNameValue, int i,
-			ArrayList<String> pageIndex) {
+	private void pageANDSearcher(Page page,
+			Hashtable<String, String> htblColNameValue, int p,
+			ArrayList<Tuples> pageIndex) {
 		String[] keyValue = htblColNameValue.toString().split(",");
 		String[] hashValues;
+		Tuples t;
+		String key;
 
 		for (int j = 0; j < 20; j++) {
 			for (int z = 0; z < keyValue.length; z++) {
 				hashValues = keyValue[z].split("=");
-				if (p.read(j).get(hashValues[0]).equals(hashValues[1])
-						&& !pageIndex.contains(i + "," + j)) {
-					pageIndex.add(i + "," + j);
-				}
-=======
+				if (page.read(j).get(hashValues[0]).equals(hashValues[1])) {
 
-	public void deleteFromTable(String strTableName,
-			Hashtable<String, String> htblColNameValue, String strOperator)
-			throws DBEngineException {
-		int index = searchArraylist(strTableName);
-		if (index == -1) {
-			System.err.println("Please ensure that the table name: \""
-					+ strTableName + "\" is correct");
-			return;
-		}
-		int allPagesCount = this.allTables.get(index).getController()
-				.getAllPages().length;
-		int i, j;
-		for (i = 0; i < allPagesCount; i++) {
-			for (j = 0; j < 20; j++) {
-//				if (this.allTables.get(index).getController().getPage(i)
-//						.read(j))
-//					;
->>>>>>> dfb77b8b9efdbaa53f2b16eb712c66f0b50e7cca
+					if (contains(pageIndex, p, j)) {
+						int index = arrayListSearcher(pageIndex, p, j);
+						key = pageIndex.get(index).getKey();
+						pageIndex.get(index).setKey(key + hashValues[0]);
+					} else {
+						t = new Tuples(p, j, hashValues[0]);
+						pageIndex.add(t);
+					}
+				}
+
 			}
 		}
+	}
+
+	private void pageORSearcher(Page page,
+			Hashtable<String, String> htblColNameValue, int p,
+			ArrayList<Tuples> pageIndex) {
+		String[] keyValue = htblColNameValue.toString().split(",");
+		String[] hashValues;
+		Tuples t;
+		String key;
+
+		for (int j = 0; j < 20; j++) {
+			for (int z = 0; z < keyValue.length; z++) {
+				hashValues = keyValue[z].split("=");
+				if (page.read(j).get(hashValues[0]).equals(hashValues[1])) {
+					t = new Tuples(p, j, hashValues[0]);
+					pageIndex.add(t);
+				}
+			}
+
+		}
+	}
+
+	private int arrayListSearcher(ArrayList<Tuples> a, int page, int index) {
+		for (int i = 0; i < a.size(); i++) {
+			if (a.get(i).getIndex() == index && a.get(i).getPage() == page) {
+				return i;
+			}
+		}
+		return -1;
+	}
+
+	private boolean contains(ArrayList<Tuples> a, int page, int index) {
+		for (int i = 0; i < a.size(); i++) {
+			if (a.get(i).getPage() == page && a.get(i).getIndex() == index) {
+				return true;
+			}
+		}
+		return false;
 	}
 
 	private String typeHelper(String x) {
@@ -267,7 +311,7 @@ public class TablesController implements Serializable {
 		String[] hash;
 		String[] foreignColumns = x.toString().split(",");
 
-		String pattern = "(\\w)(\\.)(\\w)";
+		String pattern = "^(\\w)(\\.)(\\w)$";
 		Pattern regexp = Pattern.compile(pattern);
 		Matcher checker;
 		if (x.isEmpty()) {
@@ -403,29 +447,21 @@ public class TablesController implements Serializable {
 			writer.print(typeHelper(hash[1].trim())); // writing column type
 			writer.print("False, "); // writing index
 			writer.print(fkHelper(htblColNameRefs, nameHelper(hash[0]))); // writing
-<<<<<<< HEAD
+
 			// references
-=======
-																			// references
->>>>>>> dfb77b8b9efdbaa53f2b16eb712c66f0b50e7cca
 			writer.println();
 		}
 		writer.close();
+		Hashtable<String, String> tmp = new Hashtable<String, String>();
+		tmp.put(strKeyColName, "True");
+
 		tableObject = new Table(strTableName, htblColNameType, htblColNameRefs);
+		tableObject.setColPK(tmp);
 		allTables.add(tableObject);
 		this.save();
 
 	}
 
-<<<<<<< HEAD
-=======
-	private void readMetaFile() {
-		// InputStream fis = new FileInputStream(csvFile);
-		// BufferedReader reader = new BufferedReader(fis);
-
-	}
-
->>>>>>> dfb77b8b9efdbaa53f2b16eb712c66f0b50e7cca
 	public static void main(String[] args) throws DBAppException {
 
 		TablesController t = new TablesController();
@@ -445,11 +481,6 @@ public class TablesController implements Serializable {
 		val.put("name", "soso");
 		val.put("DOB", "1/2/3");
 
-<<<<<<< HEAD
-		// t=load();
-		// t.insertIntoTable("demo", val);
-
-=======
 		// t = load();
 		t.insertIntoTable("demo", val);
 
@@ -459,7 +490,6 @@ public class TablesController implements Serializable {
 		// t=load();
 		// t.insertIntoTable("demo", val);
 
->>>>>>> dfb77b8b9efdbaa53f2b16eb712c66f0b50e7cca
 		int index = t.searchArraylist("demo");
 
 		// System.out.println(t.allTables.get(t.searchArraylist("demo")).getPage().getCurrentPage());
