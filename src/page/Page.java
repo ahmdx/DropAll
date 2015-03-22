@@ -24,9 +24,14 @@ public class Page implements Serializable {
 		this.pageName = pageName;
 	}
 
-	public final void write(Hashtable<String, String> record) {
+	public final Hashtable<String, String> write(
+			Hashtable<String, String> record) {
 		this.records[this.index] = record;
 		this.index++;
+		Hashtable<String, String> hash = new Hashtable<String, String>();
+		hash.put("page", this.pageName);
+		hash.put("index", "" + index);
+		return hash;
 	}
 
 	public final Hashtable<String, String> read(int index) {

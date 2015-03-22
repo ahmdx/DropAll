@@ -25,7 +25,7 @@ public class TablesController implements Serializable {
 	public void createTable(String strTableName,
 			Hashtable<String, String> htblColNameType,
 			Hashtable<String, String> htblColNameRefs, String strKeyColName)
-					throws DBAppException {
+			throws DBAppException {
 
 		tableColumns = htblColNameType;
 		tableReferences = htblColNameRefs;
@@ -84,7 +84,6 @@ public class TablesController implements Serializable {
 			return;
 		}
 
-
 		for (int i = 0; i < keyValue.length; i++) {
 			hashValues = keyValue[i].split("=");
 			hashTypes = nameType[i].split("=");
@@ -101,12 +100,13 @@ public class TablesController implements Serializable {
 	// bulk insert
 
 	public void insertIntoTable(String strTableName,
-			Hashtable<String,String>[] htblColNameValue)throws DBAppException{
+			Hashtable<String, String>[] htblColNameValue) throws DBAppException {
 
 		int index = searchArraylist(strTableName);
 		String[] keyValue;
 		String[] hashValues;
-		String[] nameType = this.allTables.get(index).getColTypes().toString().split(",");
+		String[] nameType = this.allTables.get(index).getColTypes().toString()
+				.split(",");
 		String[] hashTypes;
 
 		if (index == -1) {
@@ -118,11 +118,12 @@ public class TablesController implements Serializable {
 		for (int i = 0; i < htblColNameValue.length; i++) {
 			keyValue = htblColNameValue[i].toString().split(",");
 
-			for(int j=0; j<keyValue.length;j++){
+			for (int j = 0; j < keyValue.length; j++) {
 				hashValues = keyValue[i].split("=");
 				hashTypes = nameType[i].split("=");
 				if (formatChecker(hashTypes[1], hashValues[1]) != "true") {
-					System.err.println(formatChecker(hashTypes[1], hashValues[1]));
+					System.err.println(formatChecker(hashTypes[1],
+							hashValues[1]));
 					return;
 				}
 			}
@@ -132,10 +133,9 @@ public class TablesController implements Serializable {
 		this.save();
 	}
 
-
 	public void deleteFromTable(String strTableName,
 			Hashtable<String, String> htblColNameValue, String strOperator)
-					throws DBEngineException {
+			throws DBEngineException {
 		int index = searchArraylist(strTableName);
 		String[] keyValue = htblColNameValue.toString().split(",");
 		String[] hashValues;
@@ -164,7 +164,7 @@ public class TablesController implements Serializable {
 
 		if (strOperator == null && htblColNameValue.size() > 1) {
 			System.err
-			.println("Please choose an operator being either \"AND\" or \"OR\" when having multiple columns");
+					.println("Please choose an operator being either \"AND\" or \"OR\" when having multiple columns");
 			return;
 		}
 
@@ -184,10 +184,10 @@ public class TablesController implements Serializable {
 				if (pageIndex.get(i).getKey()
 						.equals(keyGenerator(htblColNameValue))) {
 					this.allTables
-					.get(index)
-					.getController()
-					.deleteFromPage(pageIndex.get(i).getPage(),
-							pageIndex.get(i).getIndex());
+							.get(index)
+							.getController()
+							.deleteFromPage(pageIndex.get(i).getPage(),
+									pageIndex.get(i).getIndex());
 				}
 			}
 		}
@@ -200,13 +200,13 @@ public class TablesController implements Serializable {
 
 			for (int i = 0; i < pageIndex.size(); i++) {
 				this.allTables
-				.get(index)
-				.getController()
-				.deleteFromPage(pageIndex.get(i).getPage(),
-						pageIndex.get(i).getIndex());
+						.get(index)
+						.getController()
+						.deleteFromPage(pageIndex.get(i).getPage(),
+								pageIndex.get(i).getIndex());
 			}
 		}
-			this.save();
+		this.save();
 	}
 
 	private void pageANDSearcher(Page page,
@@ -447,10 +447,10 @@ public class TablesController implements Serializable {
 		if (error != null) {
 			System.err.println("Error in referencing another table");
 			System.err
-			.println("Please specify the column name you want to refer to in: "
-					+ nameHelper(error));
+					.println("Please specify the column name you want to refer to in: "
+							+ nameHelper(error));
 			System.err
-			.println("To specifiy column place a \".\" after the table name");
+					.println("To specifiy column place a \".\" after the table name");
 			return;
 		}
 

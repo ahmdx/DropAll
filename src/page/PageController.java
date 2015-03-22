@@ -21,14 +21,16 @@ public class PageController implements Serializable {
 		return false;
 	}
 
-	public final void writeToPage(Hashtable<String, String> record) {
+	public final Hashtable<String, String> writeToPage(
+			Hashtable<String, String> record) {
 		Page page = Page.load(this.currentPage);
 		if (page == null || page.isFull()) {
 			this.createPage();
 			page = Page.load(this.currentPage);
 		}
-		page.write(record);
+		Hashtable<String, String> hash = page.write(record);
 		page.save();
+		return hash;
 	}
 
 	public final void writeToPage(Hashtable<String, String>[] records) {
@@ -91,20 +93,20 @@ public class PageController implements Serializable {
 	}
 
 	public static void main(String[] args) {
-		PageController pages = new PageController();
-		int i = 100;
-		Hashtable<String, String>[] r = new Hashtable[101];
-		while(i-- > 0) {
-			r[i] = new Hashtable<String, String>();
-			r[i].put("key #" + i, "" + i);
-		}
-		pages.writeToPage(r);
-		
-		Page[] pag = pages.getAllPages();
-		for (Page p : pag){
-			System.out.println(p);
-		}
-		
-		//pages.deleteAllPages();
+		// PageController pages = new PageController();
+		// int i = 100;
+		// Hashtable<String, String>[] r = new Hashtable[101];
+		// while(i-- > 0) {
+		// r[i] = new Hashtable<String, String>();
+		// r[i].put("key #" + i, "" + i);
+		// }
+		// pages.writeToPage(r);
+		//
+		// Page[] pag = pages.getAllPages();
+		// for (Page p : pag){
+		// System.out.println(p);
+		// }
+
+		// pages.deleteAllPages();
 	}
 }
