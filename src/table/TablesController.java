@@ -2,8 +2,10 @@ package table;
 
 import java.io.*;
 import java.util.*;
+import java.util.Map.Entry;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
 import page.Page;
 import exceptions.DBAppException;
 import exceptions.DBEngineException;
@@ -25,7 +27,7 @@ public class TablesController implements Serializable {
 	public void createTable(String strTableName,
 			Hashtable<String, String> htblColNameType,
 			Hashtable<String, String> htblColNameRefs, String strKeyColName)
-					throws DBAppException {
+			throws DBAppException {
 
 		tableColumns = htblColNameType;
 		tableReferences = htblColNameRefs;
@@ -84,7 +86,6 @@ public class TablesController implements Serializable {
 			return;
 		}
 
-
 		for (int i = 0; i < keyValue.length; i++) {
 			hashValues = keyValue[i].split("=");
 			hashTypes = nameType[i].split("=");
@@ -101,12 +102,13 @@ public class TablesController implements Serializable {
 	// bulk insert
 
 	public void insertIntoTable(String strTableName,
-			Hashtable<String,String>[] htblColNameValue)throws DBAppException{
+			Hashtable<String, String>[] htblColNameValue) throws DBAppException {
 
 		int index = searchArraylist(strTableName);
 		String[] keyValue;
 		String[] hashValues;
-		String[] nameType = this.allTables.get(index).getColTypes().toString().split(",");
+		String[] nameType = this.allTables.get(index).getColTypes().toString()
+				.split(",");
 		String[] hashTypes;
 
 		if (index == -1) {
@@ -118,11 +120,12 @@ public class TablesController implements Serializable {
 		for (int i = 0; i < htblColNameValue.length; i++) {
 			keyValue = htblColNameValue[i].toString().split(",");
 
-			for(int j=0; j<keyValue.length;j++){
+			for (int j = 0; j < keyValue.length; j++) {
 				hashValues = keyValue[i].split("=");
 				hashTypes = nameType[i].split("=");
 				if (formatChecker(hashTypes[1], hashValues[1]) != "true") {
-					System.err.println(formatChecker(hashTypes[1], hashValues[1]));
+					System.err.println(formatChecker(hashTypes[1],
+							hashValues[1]));
 					return;
 				}
 			}
@@ -132,10 +135,9 @@ public class TablesController implements Serializable {
 		this.save();
 	}
 
-
 	public void deleteFromTable(String strTableName,
 			Hashtable<String, String> htblColNameValue, String strOperator)
-					throws DBEngineException {
+			throws DBEngineException {
 		int index = searchArraylist(strTableName);
 		String[] keyValue = htblColNameValue.toString().split(",");
 		String[] hashValues;
@@ -164,7 +166,7 @@ public class TablesController implements Serializable {
 
 		if (strOperator == null && htblColNameValue.size() > 1) {
 			System.err
-			.println("Please choose an operator being either \"AND\" or \"OR\" when having multiple columns");
+					.println("Please choose an operator being either \"AND\" or \"OR\" when having multiple columns");
 			return;
 		}
 
@@ -184,10 +186,10 @@ public class TablesController implements Serializable {
 				if (pageIndex.get(i).getKey()
 						.equals(keyGenerator(htblColNameValue))) {
 					this.allTables
-					.get(index)
-					.getController()
-					.deleteFromPage(pageIndex.get(i).getPage(),
-							pageIndex.get(i).getIndex());
+							.get(index)
+							.getController()
+							.deleteFromPage(pageIndex.get(i).getPage(),
+									pageIndex.get(i).getIndex());
 				}
 			}
 		}
@@ -200,13 +202,13 @@ public class TablesController implements Serializable {
 
 			for (int i = 0; i < pageIndex.size(); i++) {
 				this.allTables
-				.get(index)
-				.getController()
-				.deleteFromPage(pageIndex.get(i).getPage(),
-						pageIndex.get(i).getIndex());
+						.get(index)
+						.getController()
+						.deleteFromPage(pageIndex.get(i).getPage(),
+								pageIndex.get(i).getIndex());
 			}
 		}
-			this.save();
+		this.save();
 	}
 
 	private void pageANDSearcher(Page page,
@@ -447,10 +449,10 @@ public class TablesController implements Serializable {
 		if (error != null) {
 			System.err.println("Error in referencing another table");
 			System.err
-			.println("Please specify the column name you want to refer to in: "
-					+ nameHelper(error));
+					.println("Please specify the column name you want to refer to in: "
+							+ nameHelper(error));
 			System.err
-			.println("To specifiy column place a \".\" after the table name");
+					.println("To specifiy column place a \".\" after the table name");
 			return;
 		}
 
@@ -490,6 +492,89 @@ public class TablesController implements Serializable {
 
 	}
 
+	public Iterator<?> selectFromTable(String strTable,
+			Hashtable<String, String> htblColNameValue, String strOperator)
+			throws DBEngineException {
+
+		int index = searchArraylist(strTable);
+		String[] keyValue = htblColNameValue.toString().split(",");
+		String[] hashValues;
+		String[] nameType = this.allTables.get(index).getColTypes().toString()
+				.split(",");
+		String[] hashTypes;
+		
+		if (index == -1) {
+			System.err.println("Please ensure that the table name: \""
+					+ strTable + "\" is correct");
+			return null;
+		}
+
+		for (int i = 0; i < keyValue.length; i++) {
+			hashValues = keyValue[i].split("=");
+			hashTypes = nameType[i].split("=");
+			if (formatChecker(hashTypes[1], hashValues[1]) != "true") {
+				System.err.println(formatChecker(hashTypes[1], hashValues[1]));
+				return null;
+			}
+		}
+
+		int allPagesCount = this.allTables.get(index).getController()
+				.getAllPages().length;
+		ArrayList<Tuples> pageIndex = new ArrayList<Tuples>(1);
+		Iterator iter;
+		
+		if (strOperator == null && htblColNameValue.size() > 1) {
+			System.err
+					.println("Please choose an operator being either \"AND\" or \"OR\" when having multiple columns");
+			return null;
+		}
+		
+		
+		/*if (htblColNameValue.equals(null) && strOperator == null) {
+			
+		 this.allTables.get(index).getController().getAllPages();
+		 pageIndex.add();
+		}*/
+
+		if (strOperator.equals("AND")) {
+			for (int i = 0; i < allPagesCount; i++) {
+				pageANDSearcher(this.allTables.get(index).getController()
+						.getPage(i), htblColNameValue, i, pageIndex);
+
+			}
+
+			for (int i = 0; i < pageIndex.size(); i++) {
+				if (pageIndex.get(i).getKey()
+						.equals(keyGenerator(htblColNameValue))) {
+					this.allTables.get(index).getController()
+							.getPage(pageIndex.get(i).getPage())
+							.read(pageIndex.get(i).getIndex());
+
+				}
+			}
+			return iter = pageIndex.iterator();
+		}
+
+		if (strOperator.equals("OR")) {
+			for (int i = 0; i < allPagesCount; i++) {
+				pageORSearcher(this.allTables.get(index).getController()
+						.getPage(i), htblColNameValue, i, pageIndex);
+			}
+
+			for (int i = 0; i < pageIndex.size(); i++) {
+				this.allTables
+						.get(index)
+						.getController()
+						.getPage(pageIndex.get(i).getPage())
+						.read(pageIndex.get(i).getIndex());
+
+			}
+			return iter = pageIndex.iterator();
+		}
+
+		return null;
+	}
+
 	public static void main(String[] args) throws DBAppException {
 
 		TablesController t = new TablesController();
@@ -516,7 +601,7 @@ public class TablesController implements Serializable {
 				.getController().getCurrentPage());
 
 		// t=load();
-		// t.insertIntoTable("demo", val);
+		t.insertIntoTable("demo", val);
 
 		int index = t.searchArraylist("demo");
 
