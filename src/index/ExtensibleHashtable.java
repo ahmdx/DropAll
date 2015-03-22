@@ -37,8 +37,7 @@ class Directory implements Serializable {
 		return buckets;
 	}
 
-	// TODO make splitDirectory private
-	public Bucket[] splitDirectory() {
+	private Bucket[] splitDirectory() {
 		this.bitsCompared++;
 		Bucket[] temp = this.initializeBuckets(this.buckets.length * 2);
 		for (int i = 0; i < this.buckets.length; i++) {
@@ -56,11 +55,7 @@ class Directory implements Serializable {
 		return this.buckets;
 	}
 
-	private char getNthBitFromHashedString(String value, int n) {
-		return value.charAt(n);
-	}
-
-	public void splitBlock(Bucket bucket) {
+	private void splitBlock(Bucket bucket) {
 		StringBuilder key = new StringBuilder(bucket.getKey());
 		if (bucket.getKey().charAt(bucket.getKey().length() - 1) == '1') {
 			key.setCharAt(bucket.getKey().length() - 1, '0');
@@ -108,13 +103,31 @@ class Directory implements Serializable {
 				splitBlock(this.buckets[integerBits]);
 			}
 		} while (block.isFull());
-		
-		bits = Integer.toBinaryString(index.get("value").hashCode())
-				.substring(0, this.bitsCompared);
+
+		bits = Integer.toBinaryString(index.get("value").hashCode()).substring(
+				0, this.bitsCompared);
 		integerBits = Integer.parseInt(bits, 2);
 		block = this.buckets[integerBits].getBlock();
-		
+
 		block.addKey(index);
+	}
+	
+	public Hashtable<String, String> getIndex(String value) {
+		String bits = Integer.toBinaryString(value.hashCode())
+				.substring(0, this.bitsCompared);;
+		int integerBits = Integer.parseInt(bits, 2);;
+		Block block = this.buckets[integerBits].getBlock();
+		
+		return block.getKey(value);
+	}
+	
+	public void deleteIndex(String value) {
+		String bits = Integer.toBinaryString(value.hashCode())
+				.substring(0, this.bitsCompared);;
+		int integerBits = Integer.parseInt(bits, 2);;
+		Block block = this.buckets[integerBits].getBlock();
+		
+		block.removeKey(value);
 	}
 
 	public int getDirectorySize() {
@@ -128,13 +141,14 @@ class Directory implements Serializable {
 	public Bucket[] getBuckets() {
 		return this.buckets;
 	}
-	
+
 	public void print() {
 		System.out.println(this.getDirectorySize() + " : "
 				+ this.getBitsComapred());
 		Bucket[] buck = this.getBuckets();
 		for (Bucket b : buck)
-			System.out.println(b.getKey() + " : " + b.getBlockName() + " : " + b.getBlock().getBitsCompared());
+			System.out.println(b.getKey() + " : " + b.getBlockName() + " : "
+					+ b.getBlock().getBitsCompared());
 		System.out.println();
 	}
 }
@@ -286,16 +300,16 @@ public class ExtensibleHashtable implements Serializable {
 	}
 
 	public static void main(String[] args) {
-//		Directory dir = new Directory();
-//		
-//		dir.print();
-//		dir.splitDirectory();
-//		dir.print();
-//		dir.splitBlock(dir.getBuckets()[3]);
-//		dir.splitDirectory();
-//		dir.print();
-//		dir.splitBlock(dir.getBuckets()[7]);
-//		dir.print();
+		// Directory dir = new Directory();
+		//
+		// dir.print();
+		// dir.splitDirectory();
+		// dir.print();
+		// dir.splitBlock(dir.getBuckets()[3]);
+		// dir.splitDirectory();
+		// dir.print();
+		// dir.splitBlock(dir.getBuckets()[7]);
+		// dir.print();
 	}
 
 }
