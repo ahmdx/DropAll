@@ -17,7 +17,8 @@ public class TablesController implements Serializable {
 	private Hashtable<String, String> tableReferences;
 	private ArrayList<Table> allTables = new ArrayList<Table>();
 	private Table tableObject;
-	private File csvFile;
+	private File csvFile =  new File("metaFile.csv");
+	private boolean writtenBefore = false;
 
 	public TablesController() {
 	}
@@ -31,7 +32,8 @@ public class TablesController implements Serializable {
 		tableReferences = htblColNameRefs;
 
 		PrintWriter writer;
-		if (!csvFile.exists()) {
+
+		if (!writtenBefore) {
 			csvFile = new File("metafile.csv");
 
 			try {
@@ -510,10 +512,9 @@ public class TablesController implements Serializable {
 		val.put("DOB", "1/2/3");
 
 		// t = load();
-		t.insertIntoTable("demo", val);
+	//	t.insertIntoTable("demo", val);
 
-		System.out.println(t.allTables.get(t.searchArraylist("demo"))
-				.getController().getCurrentPage());
+		//System.out.println(t.allTables.get(t.searchArraylist("demo")).getController().getCurrentPage());
 
 		// t=load();
 		// t.insertIntoTable("demo", val);
