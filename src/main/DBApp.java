@@ -14,11 +14,9 @@ public class DBApp implements DBMainInterface{
 		DBApp app = new DBApp();
 		app.init();
 	}
-
-	@Override
-	public void init() {
-		// TODO Auto-generated method stub
-		File pagesDirectory = new File("pages");
+	
+	private void createFolder(String name) {
+		File pagesDirectory = new File(name);
 		if (!pagesDirectory.exists()) {
 			try {
 				pagesDirectory.mkdir();
@@ -26,6 +24,13 @@ public class DBApp implements DBMainInterface{
 				se.printStackTrace();
 			}
 		}
+	}
+
+	@Override
+	public void init() {
+		// TODO Auto-generated method stub
+		this.createFolder("pages");
+		this.createFolder("indexes");
 	}
 
 	@Override
