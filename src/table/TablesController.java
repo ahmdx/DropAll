@@ -630,16 +630,22 @@ public class TablesController implements Serializable {
 		String csvFile = "metafile.csv";
 		BufferedReader br = null;
 		String line = "";
+		String input = "";
 		
 		br = new BufferedReader(new FileReader(csvFile));
 		while ((line = br.readLine()) != null) {
 			String[] row = line.split(",");
 			if (row[0].equals(strTable) && row[1].equals(ColName)){
-			System.out.println(row[5]);
-			
-			System.out.println(row[5]);
+			row[5] = "true";
+			for (int i = 0; i < row.length; i++) {
+				line += row[i]; 
 			}
+			}
+			input += line + '\n';
 		}
+		FileOutputStream fileOut = new FileOutputStream(csvFile);
+		fileOut.write(input.getBytes());
+		fileOut.close();
 		
 	}
 	
