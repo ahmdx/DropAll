@@ -19,7 +19,8 @@ public class TablesController implements Serializable {
 	private Hashtable<String, String> tableReferences;
 	private ArrayList<Table> allTables = new ArrayList<Table>();
 	private Table tableObject;
-	private File csvFile;
+	private File csvFile =  new File("metaFile.csv");
+
 
 	public TablesController() {
 	}
@@ -28,16 +29,41 @@ public class TablesController implements Serializable {
 			Hashtable<String, String> htblColNameType,
 			Hashtable<String, String> htblColNameRefs, String strKeyColName)
 			throws DBAppException {
-
+		
+		int index = searchArraylist(strTableName);
+		if(index != -1){
+			System.err.println("Table with name: \""+strTableName+"\"already exists");
+			System.out.println(index);
+			return;
+		}
 		tableColumns = htblColNameType;
 		tableReferences = htblColNameRefs;
 
 		PrintWriter writer;
-		if (!csvFile.exists()) {
-			csvFile = new File("metafile.csv");
-
+		FileReader csvReader;
+		BufferedReader buffCsvReader;
+		boolean empty = false;
+		try {
+			csvReader = new FileReader(csvFile);
+			 buffCsvReader=new BufferedReader(csvReader);
+			 if(buffCsvReader.readLine() == null){
+					empty = true;
+				}
+		} catch (FileNotFoundException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		} catch (IOException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
+		
+		
+		
+		
+		
+		if (empty) {
 			try {
-				writer = new PrintWriter(csvFile);
+				writer = new PrintWriter(new FileWriter(csvFile, true));
 
 				for (int i = 0; i < formatList.length; i++) {
 					if (i == formatList.length - 1) {
@@ -48,10 +74,11 @@ public class TablesController implements Serializable {
 				}
 
 				writer.println();
+				writer.println();
 				writeIntoCSVFile(strTableName, htblColNameType,
 						htblColNameRefs, strKeyColName, writer);
 
-			} catch (FileNotFoundException e) {
+			} catch (Exception e) {
 
 				e.printStackTrace();
 			}
@@ -79,6 +106,11 @@ public class TablesController implements Serializable {
 		String[] nameType = this.allTables.get(index).getColTypes().toString()
 				.split(",");
 		String[] hashTypes;
+	/*	
+		if(keyValue.length != nameType.length){
+			System.err.println("Number of columns to be entered does not match the number of columns of the table");
+			return;
+		}*/
 
 		if (index == -1) {
 			System.err.println("Please ensure that the table name: \""
@@ -86,17 +118,21 @@ public class TablesController implements Serializable {
 			return;
 		}
 
+
+		System.out.println(this.allTables.get(index).getColTypes().toString());
+		
 		for (int i = 0; i < keyValue.length; i++) {
 			hashValues = keyValue[i].split("=");
 			hashTypes = nameType[i].split("=");
-			if (formatChecker(hashTypes[1], hashValues[1]) != "true") {
+
+			if (formatChecker(braceRemover(hashTypes[1]), braceRemover(hashValues[1])) != "true") {
 				System.err.println(formatChecker(hashTypes[1], hashValues[1]));
 				return;
 			}
 		}
 
 		allTables.get(index).getController().writeToPage(htblColNameValue);
-		this.save();
+	//	this.save();
 	}
 
 	// bulk insert
@@ -132,7 +168,7 @@ public class TablesController implements Serializable {
 		}
 
 		allTables.get(index).getController().writeToPage(htblColNameValue);
-		this.save();
+	//	this.save();
 	}
 
 	public void deleteFromTable(String strTableName,
@@ -208,7 +244,7 @@ public class TablesController implements Serializable {
 								pageIndex.get(i).getIndex());
 			}
 		}
-		this.save();
+	//	this.save();
 	}
 
 	private void pageANDSearcher(Page page,
@@ -304,7 +340,7 @@ public class TablesController implements Serializable {
 		}
 	}
 
-	private String nameHelper(String x) { // adjusts the name key in a hashtable
+	private String braceRemover(String x) { // adjusts the name key in a hashtable
 		if (x.startsWith("{") && x.endsWith("}")) {
 			return x.substring(1, x.length() - 1);
 		} else {
@@ -341,7 +377,7 @@ public class TablesController implements Serializable {
 		String[] hash;
 		String[] foreignColumns = x.toString().split(",");
 
-		String pattern = "^(\\w)(\\.)(\\w)$";
+		String pattern = "^(\\w+)(\\.)(\\w+)$";
 		Pattern regexp = Pattern.compile(pattern);
 		Matcher checker;
 		if (x.isEmpty()) {
@@ -411,6 +447,74 @@ public class TablesController implements Serializable {
 		}
 	}
 
+	
+	private void writeIntoCSVFile(String strTableName,
+			Hashtable<String, String> htblColNameType,
+			Hashtable<String, String> htblColNameRefs, String strKeyColName,
+			PrintWriter writer) throws DBAppException {
+
+		String[] hash;
+		String error ;
+		String[] tableColumns = htblColNameType.toString().split(",");
+		Hashtable<String, String> tmpColType = new Hashtable<String, String>();
+		String tmpString;
+		
+		if(htblColNameRefs != null){
+			 error = referencesTableFormat(htblColNameRefs);
+		
+		if (error != null) {
+			System.err.println("Error in referencing another table");
+			System.err
+					.println("Please specify the column name you want to refer to in: "
+							+ braceRemover(error));
+			System.err
+					.println("To specifiy column place a \".\" after the table name");
+			return;
+		}
+		}
+
+		for (int i = 0; i < tableColumns.length; i++) {
+			hash = tableColumns[i].split("=");
+			writer.print(strTableName + "," + " "); // writing table name
+			writer.print(keyHelper(strKeyColName, braceRemover(hash[0]))); // writing
+			// if
+			// column
+			// is
+			// PK
+			writer.print(braceRemover(hash[0].trim()) + "," + " "); // writing
+			// column
+			// name
+
+			if (typeHelper(hash[1].trim()) == hash[1].trim()) {
+				System.err.println("unkown data type in: " + hash[0].trim()
+						+ " ==> " + hash[1].trim());
+				return;
+			}
+
+			writer.print(typeHelper(hash[1].trim())); // writing column type
+			tmpString=typeHelper(hash[1].trim());
+			tmpColType.put(hash[0], tmpString.substring(0, tmpString.length()-2));
+			writer.print("False, "); // writing index
+			if(htblColNameRefs != null){
+			writer.print(fkHelper(htblColNameRefs, braceRemover(hash[0]))); // writing
+			} else {
+				writer.print("null");
+			}
+			// references
+			writer.println();
+		}
+		writer.println();
+		writer.close();
+		Hashtable<String, String> tmp = new Hashtable<String, String>();
+		tmp.put(strKeyColName, "True");
+
+		tableObject = new Table(strTableName, tmpColType, htblColNameRefs);
+		tableObject.setColPK(tmp);
+		allTables.add(tableObject);
+		//this.save();
+
+	}
+	
 	public final boolean save() {
 		try {
 			ObjectOutputStream oos = new ObjectOutputStream(
@@ -435,61 +539,6 @@ public class TablesController implements Serializable {
 			return null;
 
 		}
-	}
-
-	private void writeIntoCSVFile(String strTableName,
-			Hashtable<String, String> htblColNameType,
-			Hashtable<String, String> htblColNameRefs, String strKeyColName,
-			PrintWriter writer) throws DBAppException {
-
-		String[] hash;
-		String error = referencesTableFormat(htblColNameRefs);
-		String[] tableColumns = htblColNameType.toString().split(",");
-
-		if (error != null) {
-			System.err.println("Error in referencing another table");
-			System.err
-					.println("Please specify the column name you want to refer to in: "
-							+ nameHelper(error));
-			System.err
-					.println("To specifiy column place a \".\" after the table name");
-			return;
-		}
-
-		for (int i = 0; i < tableColumns.length; i++) {
-			hash = tableColumns[i].split("=");
-			writer.print(strTableName + "," + " "); // writing table name
-			writer.print(keyHelper(strKeyColName, nameHelper(hash[0]))); // writing
-			// if
-			// column
-			// is
-			// PK
-			writer.print(nameHelper(hash[0].trim()) + "," + " "); // writing
-			// column
-			// name
-
-			if (typeHelper(hash[1].trim()) == hash[1].trim()) {
-				System.err.println("unkown data type in: " + hash[0].trim()
-						+ " ==> " + hash[1].trim());
-				return;
-			}
-
-			writer.print(typeHelper(hash[1].trim())); // writing column type
-			writer.print("False, "); // writing index
-			writer.print(fkHelper(htblColNameRefs, nameHelper(hash[0]))); // writing
-
-			// references
-			writer.println();
-		}
-		writer.close();
-		Hashtable<String, String> tmp = new Hashtable<String, String>();
-		tmp.put(strKeyColName, "True");
-
-		tableObject = new Table(strTableName, htblColNameType, htblColNameRefs);
-		tableObject.setColPK(tmp);
-		allTables.add(tableObject);
-		this.save();
-
 	}
 
 	public Iterator<?> selectFromTable(String strTable,
@@ -595,34 +644,35 @@ public class TablesController implements Serializable {
 	}
 	
 	public static void main(String[] args) throws DBAppException {
-
+			
 		TablesController t = new TablesController();
-
+t.allTables.clear();
 		Hashtable<String, String> cols = new Hashtable<String, String>();
 		cols.put("ID", "int");
-		cols.put("name", "date");
+		cols.put("name", "varchar");
 		cols.put("DOB", "date");
 
 		Hashtable<String, String> refs = new Hashtable<String, String>();
 		refs.put("name", "user.fname");
 		refs.put("ID", "employee.ID");
-		t.createTable("demo", cols, refs, "name");
+		//t=load();
+		t.createTable("demo", cols, null, "name");
+	//	t.createTable("demo", cols, null, "name");
 
 		Hashtable<String, String> val = new Hashtable<String, String>();
 		val.put("ID", "1");
 		val.put("name", "soso");
-		val.put("DOB", "1/2/3");
+		val.put("DOB", "13/22/3333");
 
 		// t = load();
 		t.insertIntoTable("demo", val);
 
-		System.out.println(t.allTables.get(t.searchArraylist("demo"))
-				.getController().getCurrentPage());
+		//System.out.println(t.allTables.get(t.searchArraylist("demo")).getControlwent here"ler().getCurrentPage());
 
 		// t=load();
-		t.insertIntoTable("demo", val);
+	//	t.insertIntoTable("demo", val);
 
-		int index = t.searchArraylist("demo");
+	//	int index = t.searchArraylist("demo");
 
 		// System.out.println(t.allTables.get(t.searchArraylist("demo")).getPage().getCurrentPage());
 
