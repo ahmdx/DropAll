@@ -575,6 +575,25 @@ public class TablesController implements Serializable {
 		return null;
 	}
 
+	@SuppressWarnings("resource")
+	public void CreateIndex (String strTable,String ColName) throws IOException {
+	
+		String csvFile = "metafile.csv";
+		BufferedReader br = null;
+		String line = "";
+		
+		br = new BufferedReader(new FileReader(csvFile));
+		while ((line = br.readLine()) != null) {
+			String[] row = line.split(",");
+			if (row[0].equals(strTable) && row[1].equals(ColName)){
+			System.out.println(row[5]);
+			
+			System.out.println(row[5]);
+			}
+		}
+		
+	}
+	
 	public static void main(String[] args) throws DBAppException {
 
 		TablesController t = new TablesController();
