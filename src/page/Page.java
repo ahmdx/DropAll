@@ -13,7 +13,7 @@ import java.util.Hashtable;
 public class Page implements Serializable {
 
 	private static final long serialVersionUID = 1L;
-	private final int pageSize = 20;
+	private final int pageSize = 100;
 	private int index;
 	private Hashtable<String, String>[] records;
 	private final String pageName;
