@@ -601,10 +601,26 @@ public class TablesController implements Serializable {
 		 * pageIndex.add(); }
 		 */
 
+
 		if (strOperator.toLowerCase().trim().equals("or")
 				|| strOperator.toLowerCase().trim().equals("null")) {
 			for (int i = 0; i < allPagesCount; i++) {
 				pageORSearcher(this.allTables.get(index).getController()
+						.getPage(i), htblColNameValue, i, pageIndex);
+			}
+
+			for (int i = 0; i < pageIndex.size(); i++) {
+				this.allTables.get(index).getController()
+						.getPage(pageIndex.get(i).getPage())
+						.read(pageIndex.get(i).getIndex());
+
+			}
+			return iter = pageIndex.iterator();
+		}
+		
+		if(strOperator.toLowerCase().trim().equals("and")){
+		for (int i = 0; i < allPagesCount; i++) {
+				pageANDSearcher(this.allTables.get(index).getController()
 						.getPage(i), htblColNameValue, i, pageIndex);
 			}
 
