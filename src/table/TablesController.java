@@ -123,14 +123,14 @@ public class TablesController implements Serializable {
 			if (formatChecker(braceRemover(hashTypes[1]),
 					braceRemover(hashValues[1])) != "true") {
 				System.err.print(formatChecker(hashTypes[1], hashValues[1]));
-				System.err.print(" in: "+hashValues[0]);
-				
+				System.err.print(" in: " + hashValues[0]);
+
 				return;
 			}
 		}
 
 		allTables.get(index).getController().writeToPage(htblColNameValue);
-		 this.save();
+		this.save();
 	}
 
 	// bulk insert
@@ -166,7 +166,7 @@ public class TablesController implements Serializable {
 		}
 
 		allTables.get(index).getController().writeToPage(htblColNameValue);
-		 this.save();
+		this.save();
 	}
 
 	public void deleteFromTable(String strTableName,
@@ -278,13 +278,13 @@ public class TablesController implements Serializable {
 		String[] keyValue = htblColNameValue.toString().split(",");
 		String[] hashValues;
 		Tuples t;
-		String key;
 
-		for (int j = 0; j < 20; j++) {
+		for (int j = 0; j < 100; j++) {
 			for (int z = 0; z < keyValue.length; z++) {
 				hashValues = keyValue[z].split("=");
-				if (page.read(j).get(hashValues[0]).equals(hashValues[1])) {
-					t = new Tuples(p, j, hashValues[0]);
+				if (page.read(j).get(braceRemover(hashValues[0].trim())).equals(braceRemover(hashValues[1].trim()))) {
+
+					t = new Tuples(p, j, braceRemover(hashValues[0].trim()));
 					pageIndex.add(t);
 				}
 			}
@@ -339,7 +339,7 @@ public class TablesController implements Serializable {
 	}
 
 	private String braceRemover(String x) { // adjusts the name key in a
-											// hashtable
+		// hashtable
 		if (x.startsWith("{") && x.endsWith("}")) {
 			return x.substring(1, x.length() - 1);
 		} else {
@@ -510,7 +510,7 @@ public class TablesController implements Serializable {
 		tableObject = new Table(strTableName, tmpColType, htblColNameRefs);
 		tableObject.setColPK(tmp);
 		allTables.add(tableObject);
-		 this.save();
+		this.save();
 
 	}
 
@@ -545,11 +545,11 @@ public class TablesController implements Serializable {
 			throws DBEngineException {
 
 		int index = searchArraylist(strTable);
+		// String[] nameType =
+		// this.allTables.get(index).getColTypes().toString().split(",");
+		// String[] hashTypes;
 		String[] keyValue = htblColNameValue.toString().split(",");
 		String[] hashValues;
-		String[] nameType = this.allTables.get(index).getColTypes().toString()
-				.split(",");
-		String[] hashTypes;
 
 		if (index == -1) {
 			System.err.println("Please ensure that the table name: \""
@@ -559,10 +559,26 @@ public class TablesController implements Serializable {
 
 		for (int i = 0; i < keyValue.length; i++) {
 			hashValues = keyValue[i].split("=");
-			hashTypes = nameType[i].split("=");
-			if (formatChecker(hashTypes[1], hashValues[1]) != "true") {
-				System.err.println(formatChecker(hashTypes[1], hashValues[1]));
-				System.err.print(" in: "+hashValues[0]);
+			if (!this.allTables.get(index).getColTypes()
+					.containsKey(braceRemover(hashValues[0].trim()))) {
+				System.err.println("Column \""
+						+ braceRemover(hashValues[0].trim())
+						+ "\" does not exist in table \"" + strTable + "\"");
+				return null;
+			}
+
+		}
+
+		for (int i = 0; i < keyValue.length; i++) {
+			hashValues = keyValue[i].split("=");
+			if (formatChecker(
+					this.allTables.get(index).getColTypes()
+							.get(braceRemover(hashValues[0].trim())),
+					braceRemover(hashValues[1].trim())) != "true") {
+				System.err.println(formatChecker(this.allTables.get(index)
+						.getColTypes().get(braceRemover(hashValues[0].trim())),
+						braceRemover(hashValues[1].trim())));
+				System.err.print(" in: " + hashValues[0]);
 				return null;
 			}
 		}
@@ -572,7 +588,7 @@ public class TablesController implements Serializable {
 		ArrayList<Tuples> pageIndex = new ArrayList<Tuples>(1);
 		Iterator iter;
 
-		if (strOperator == null && htblColNameValue.size() > 1) {
+		if (strOperator.toLowerCase().trim().equals("null") && htblColNameValue.size() > 1) {
 			System.err
 					.println("Please choose an operator being either \"AND\" or \"OR\" when having multiple columns");
 			return null;
@@ -585,7 +601,23 @@ public class TablesController implements Serializable {
 		 * pageIndex.add(); }
 		 */
 
-		if (strOperator.equals("AND")) {
+		if (strOperator.toLowerCase().trim().equals("or")
+				|| strOperator.toLowerCase().trim().equals("null")) {
+			for (int i = 0; i < allPagesCount; i++) {
+				pageORSearcher(this.allTables.get(index).getController()
+						.getPage(i), htblColNameValue, i, pageIndex);
+			}
+
+			for (int i = 0; i < pageIndex.size(); i++) {
+				this.allTables.get(index).getController()
+						.getPage(pageIndex.get(i).getPage())
+						.read(pageIndex.get(i).getIndex());
+
+			}
+			return iter = pageIndex.iterator();
+		}
+
+		if (strOperator.toLowerCase().trim().equals("and")) {
 			for (int i = 0; i < allPagesCount; i++) {
 				pageANDSearcher(this.allTables.get(index).getController()
 						.getPage(i), htblColNameValue, i, pageIndex);
@@ -604,21 +636,6 @@ public class TablesController implements Serializable {
 			return iter = pageIndex.iterator();
 		}
 
-		if (strOperator.equals("OR")) {
-			for (int i = 0; i < allPagesCount; i++) {
-				pageORSearcher(this.allTables.get(index).getController()
-						.getPage(i), htblColNameValue, i, pageIndex);
-			}
-
-			for (int i = 0; i < pageIndex.size(); i++) {
-				this.allTables.get(index).getController()
-						.getPage(pageIndex.get(i).getPage())
-						.read(pageIndex.get(i).getIndex());
-
-			}
-			return iter = pageIndex.iterator();
-		}
-
 		return null;
 	}
 
@@ -629,27 +646,29 @@ public class TablesController implements Serializable {
 		String input = "";
 
 		int index = searchArraylist(strTable);
-		if(index == -1 ){
-			System.err.println("Table name:\""+strTable+" \"does not exist");
+		if (index == -1) {
+			System.err
+					.println("Table name:\"" + strTable + " \"does not exist");
 			return;
 		}
-		
-		if(!this.allTables.get(index).getColTypes().containsKey(ColName)){
-			System.err.println("Column:\""+ColName+" \"does not exist in table: \""+strTable+"\"");
+
+		if (!this.allTables.get(index).getColTypes().containsKey(ColName)) {
+			System.err.println("Column:\"" + ColName
+					+ " \"does not exist in table: \"" + strTable + "\"");
 			return;
 		}
-		
+
 		br = new BufferedReader(new FileReader(csvFile));
 		while ((line = br.readLine()) != null) {
 			String[] column = line.split(",");
-			
+
 			if (column[0].trim().equals(strTable)
 					&& column[2].trim().equals(ColName)) {
 				column[4] = " True";
 
 				line = "";
 				for (int i = 0; i < column.length; i++) {
-					if (i == column.length-1) {
+					if (i == column.length - 1) {
 						line += column[i];
 					} else {
 						line += column[i] + ",";
@@ -662,17 +681,18 @@ public class TablesController implements Serializable {
 		fileOut.write(input.getBytes());
 		fileOut.close();
 		br.close();
-		
+
 		ExtensibleHashtable extHashtable = new ExtensibleHashtable();
-		this.allTables.get(index).getColSingleIndexName().put(ColName, extHashtable.getIndexName());
-		//this.save();
+		this.allTables.get(index).getColSingleIndexName()
+				.put(ColName, extHashtable.getIndexName());
+		// this.save();
 
 	}
 
 	public static void main(String[] args) throws DBAppException, IOException {
 
 		TablesController t;// = new TablesController();
-		//t.allTables.clear();
+		// t.allTables.clear();
 		Hashtable<String, String> cols = new Hashtable<String, String>();
 		cols.put("ID", "int");
 		cols.put("name", "varchar");
@@ -682,7 +702,7 @@ public class TablesController implements Serializable {
 		refs.put("name", "user.fname");
 		refs.put("ID", "employee.ID");
 		// t=load();
-		//t.createTable("demo", cols, null, "name");
+		// t.createTable("demo", cols, null, "name");
 		// t.createTable("demo", cols, null, "name");
 
 		Hashtable<String, String> val = new Hashtable<String, String>();
@@ -690,23 +710,31 @@ public class TablesController implements Serializable {
 		val.put("name", "soso");
 		val.put("DOB", "13/22/3333");
 
-		 t = load();
+		t = load();
 		// t.insertIntoTable("demo", val);
-		 
-		 
 
-		//t.createIndex("demo", "DOB");
+		// t.createIndex("demo", "DOB");
 		// System.out.println(t.allTables.get(t.searchArraylist("demo")).getControlwent
 		// here"ler().getCurrentPage());
 
 		// t=load();
 		// t.insertIntoTable("demo", val);
 
-		 int index = t.searchArraylist("demo");
-		 
-		 System.out.println(t.allTables.get(index).getColTypes().toString());
-		 
-		System.out.println(t.allTables.get(t.searchArraylist("demo")).getController().getCurrentPage());
+		int index = t.searchArraylist("demo");
+
+		Hashtable<String, String> x = new Hashtable<String, String>();
+		x.put("ID", "1");
+
+		try {
+			t.selectFromTable("demo", x, "null");
+		} catch (DBEngineException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
+		// System.out.println(t.allTables.get(index).getColTypes().toString());
+
+		// System.out.println(t.allTables.get(t.searchArraylist("demo")).getController().getCurrentPage());
 
 	}
 
