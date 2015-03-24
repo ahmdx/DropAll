@@ -1,17 +1,22 @@
 package table;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Hashtable;
+
 import page.PageController;
 import exceptions.DBAppException;
 
 public class Table implements Serializable {
+	private static final long serialVersionUID = 1L;
 	private PageController controller;
 	private String tableName;
 	private Hashtable<String, String> colTypes;
 	private Hashtable<String, String> colRefs;
-	private Hashtable<String, String> colPK;
-	private Hashtable<String, String> colIndex;
+	private ArrayList<String> colPK;
+	private Hashtable<String, String> colSingleIndexName;
+	private Hashtable<String, String> colMultiIndexName;
+	
 
 	public Table(String name, Hashtable<String, String> t,
 			Hashtable<String, String> r) {
@@ -20,8 +25,9 @@ public class Table implements Serializable {
 		this.controller = new PageController();
 		this.colTypes = t;
 		this.colRefs = r;
-		this.colPK = null;
-		this.colIndex = null;
+		this.colPK = new ArrayList<String>();
+		this.colSingleIndexName = new Hashtable<String, String>();
+		this.colMultiIndexName= new Hashtable<String, String>();
 	}
 
 	public PageController getController() {
@@ -49,21 +55,31 @@ public class Table implements Serializable {
 	}
 	
 	
-	public Hashtable<String, String> getColPK() {
+	public ArrayList<String> getColPK() {
 		return colPK;
 	}
 
-	public void setColPK(Hashtable<String, String> colPK) {
+	public void setColPK(ArrayList<String> colPK) {
 		this.colPK = colPK;
 	}
 
-	public Hashtable<String, String> getColIndex() {
-		return colIndex;
+	public Hashtable<String, String> getColSingleIndexName() {
+		return colSingleIndexName;
 	}
 
-	public void setColIndex(Hashtable<String, String> colIndex) {
-		this.colIndex = colIndex;
+	public void setColSingleIndexName(Hashtable<String, String> colSingleIndexName) {
+		this.colSingleIndexName = colSingleIndexName;
 	}
+
+	public Hashtable<String, String> getColMultiIndexName() {
+		return colMultiIndexName;
+	}
+
+	public void setColMultiIndexName(Hashtable<String, String> colMultiIndexName) {
+		this.colMultiIndexName = colMultiIndexName;
+	}
+
+	
 
 	
 }

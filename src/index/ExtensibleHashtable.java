@@ -400,6 +400,11 @@ public class ExtensibleHashtable implements Serializable {
 		File f = new File("indexes/" + indexName + ".index");
 		return f.delete();
 	}
+	
+
+	public String getIndexName() {
+		return indexName;
+	}
 
 	public static void main(String[] args) {
 //		 ExtensibleHashtable index = new ExtensibleHashtable();
