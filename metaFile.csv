@@ -4,3 +4,7 @@ demo, False, ID, java.lang.Integer, False, null
 demo, True, name, java.lang.String, False, null
 demo, False, DOB, java.util.Date, True, null
 
+demo, False, ID, java.lang.Integer, False, null
+demo, True, name, java.lang.String, False, null
+demo, False, DOB, java.util.Date, True, null
+

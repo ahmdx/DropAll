@@ -580,6 +580,21 @@ public class TablesController implements Serializable {
 		 * pageIndex.add(); }
 		 */
 
+		if (strOperator == null && htblColNameValue.size() == 1){
+			for (int i = 0; i < allPagesCount; i++) {
+				pageORSearcher(this.allTables.get(index).getController()
+						.getPage(i), htblColNameValue, i, pageIndex);
+			}
+
+			for (int i = 0; i < pageIndex.size(); i++) {
+				this.allTables.get(index).getController()
+						.getPage(pageIndex.get(i).getPage())
+						.read(pageIndex.get(i).getIndex());
+
+			}
+			return iter = pageIndex.iterator();
+		}
+		
 		if (strOperator.equals("AND")) {
 			for (int i = 0; i < allPagesCount; i++) {
 				pageANDSearcher(this.allTables.get(index).getController()
