@@ -256,7 +256,7 @@ public class TablesController implements Serializable {
 		for (int j = 0; j < 20; j++) {
 			for (int z = 0; z < keyValue.length; z++) {
 				hashValues = keyValue[z].split("=");
-				if (page.read(j).get(hashValues[0]).equals(hashValues[1])) {
+				if (page.read(j).get(braceRemover(hashValues[0].trim())).equals(braceRemover(hashValues[1].trim()))) {
 
 					if (contains(pageIndex, p, j)) {
 						int index = arrayListSearcher(pageIndex, p, j);
@@ -278,17 +278,20 @@ public class TablesController implements Serializable {
 		String[] keyValue = htblColNameValue.toString().split(",");
 		String[] hashValues;
 		Tuples t;
+		Hashtable<String, String> tmp;
 
 		for (int j = 0; j < 100; j++) {
 			for (int z = 0; z < keyValue.length; z++) {
 				hashValues = keyValue[z].split("=");
-				if (page.read(j).get(braceRemover(hashValues[0].trim())).equals(braceRemover(hashValues[1].trim()))) {
-
+				tmp=page.read(j);
+				if (tmp != null && tmp.get(braceRemover(hashValues[0].trim())).equals(braceRemover(hashValues[1].trim()))) {
 					t = new Tuples(p, j, braceRemover(hashValues[0].trim()));
-					pageIndex.add(t);
+					
+					if(!contains(pageIndex, p, j)){
+						pageIndex.add(t);
+					}
 				}
 			}
-
 		}
 	}
 
@@ -569,6 +572,12 @@ public class TablesController implements Serializable {
 
 		}
 
+		if((strOperator.trim().toLowerCase().equals("or") || strOperator.trim().toLowerCase().equals("and")) && htblColNameValue.size()  ==1){
+			System.err.println("Please add more columns to the query if using an operator");
+			return null;
+		}
+		
+		
 		for (int i = 0; i < keyValue.length; i++) {
 			hashValues = keyValue[i].split("=");
 			if (formatChecker(
@@ -739,10 +748,20 @@ public class TablesController implements Serializable {
 		int index = t.searchArraylist("demo");
 
 		Hashtable<String, String> x = new Hashtable<String, String>();
-		x.put("ID", "1");
+		x.put("name", "sasso");
+		x.put("ID", "0");
+	
 
 		try {
-			t.selectFromTable("demo", x, "null");
+			Iterator i= t.selectFromTable("demo", x, "or");
+			
+			for(int z =0 ; i.hasNext() != false; z++){
+				i.next();
+				System.out.println(z);
+			}
+			if(i == null)
+				System.out.println(232);		
+
 		} catch (DBEngineException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -750,7 +769,7 @@ public class TablesController implements Serializable {
 
 		// System.out.println(t.allTables.get(index).getColTypes().toString());
 
-		// System.out.println(t.allTables.get(t.searchArraylist("demo")).getController().getCurrentPage());
+		 System.out.println(t.allTables.get(t.searchArraylist("demo")).getController().getCurrentPage());
 
 	}
 
