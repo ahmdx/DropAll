@@ -15,11 +15,11 @@ public class DBApp implements DBMainInterface{
 		app.init();
 	}
 	
-	private void createFolder(String name) {
-		File pagesDirectory = new File(name);
-		if (!pagesDirectory.exists()) {
+	private void createDirectory(String name) {
+		File directory = new File(name);
+		if (!directory.exists()) {
 			try {
-				pagesDirectory.mkdir();
+				directory.mkdir();
 			} catch (SecurityException se) {
 				se.printStackTrace();
 			}
@@ -29,8 +29,8 @@ public class DBApp implements DBMainInterface{
 	@Override
 	public void init() {
 		// TODO Auto-generated method stub
-		this.createFolder("pages");
-		this.createFolder("indexes");
+		this.createDirectory("pages");
+		this.createDirectory("indexes");
 	}
 
 	@Override
