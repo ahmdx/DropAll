@@ -410,6 +410,10 @@ public class ExtensibleHashtable implements Serializable {
 	public String getIndexName() {
 		return indexName;
 	}
+	
+	public Directory getDirectory() {
+		return this.directory;
+	}
 
 	public static void main(String[] args) {
 		 ExtensibleHashtable index = new ExtensibleHashtable();
