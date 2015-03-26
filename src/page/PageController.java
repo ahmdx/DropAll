@@ -33,7 +33,7 @@ public class PageController implements Serializable {
 		return hash;
 	}
 
-	public final void writeToPage(Hashtable<String, String>[] records) {
+	public final void writeToPage(ArrayList<Hashtable<String, String>> records) {
 		Page page = Page.load(this.currentPage);
 		if (page == null || page.isFull()) {
 			this.createPage();
