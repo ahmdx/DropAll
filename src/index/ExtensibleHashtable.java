@@ -198,6 +198,10 @@ class Directory implements Serializable {
 			Block block = b.getBlock();
 			System.out.println(b.getKey() + " : " + b.getBlockName() + " : "
 					+ block.getBitsCompared() + " : " + block.getSize());
+			ArrayList<Hashtable<String, String>> indexes = block.getIndexes();
+			for (Hashtable<String, String> index : indexes) {
+				System.out.println("        "+index);
+			}
 		}
 		System.out.println();
 	}
@@ -335,6 +339,10 @@ class Block implements Serializable {
 	public void setBitsCompared(int bitsCompared) {
 		this.bitsCompared = bitsCompared;
 	}
+	
+	public ArrayList<Hashtable<String, String>> getIndexes() {
+		return this.indexes;
+	}
 }
 
 public class ExtensibleHashtable implements Serializable {
@@ -404,17 +412,17 @@ public class ExtensibleHashtable implements Serializable {
 	}
 
 	public static void main(String[] args) {
-		// ExtensibleHashtable index = new ExtensibleHashtable();
-		ExtensibleHashtable index = ExtensibleHashtable
-				.load("ba47fd47-ee31-4ef5-884d-9a0d1dd5c906");
+		 ExtensibleHashtable index = new ExtensibleHashtable();
+//		ExtensibleHashtable index = ExtensibleHashtable
+//				.load("20dbb6e7-6136-4113-8101-3f71667aa604");
 		// ExtensibleHashtable.delete("00ee7886-1934-4656-9b50-cc520e91713a");
-		// int i = 40;
-		// while (i-- > 0) {
-		// Hashtable<String, String> key = new Hashtable<String, String>();
-		// key.put("value", "" + i);
-		// index.addIndex(key);
-		// }
-		System.out.println(index.getIndex("39"));
+		 int i = 40;
+		 while (i-- > 0) {
+		 Hashtable<String, String> key = new Hashtable<String, String>();
+		 key.put("value", "" + i);
+		 index.addIndex(key);
+		 }
+		index.directory.print();
 		// index.directory.print();
 	}
 
