@@ -56,13 +56,13 @@ class Directory implements Serializable {
 	}
 
 	public void splitBlock(Bucket bucket) {
-		StringBuilder key = new StringBuilder(bucket.getKey());
-		if (bucket.getKey().charAt(bucket.getKey().length() - 1) == '1') {
-			key.setCharAt(bucket.getKey().length() - 1, '0');
-		} else {
-			key.setCharAt(bucket.getKey().length() - 1, '1');
-		}
-		Bucket secondBucket = this.buckets[Integer.parseInt(key.toString(), 2)];
+		// StringBuilder key = new StringBuilder(bucket.getKey());
+		// if (bucket.getKey().charAt(bucket.getKey().length() - 1) == '1') {
+		// key.setCharAt(bucket.getKey().length() - 1, '0');
+		// } else {
+		// key.setCharAt(bucket.getKey().length() - 1, '1');
+		// }
+		Bucket secondBucket = this.buckets[Integer.parseInt(bucket.getKey()) ^ 1];
 
 		Block firstBlock = bucket.getBlock();
 		Block secondBlock = new Block();
@@ -141,19 +141,20 @@ class Directory implements Serializable {
 
 	public void shrinkBlock(Bucket bucket) {
 		bucket.getBlock().delete();
-		StringBuilder key = new StringBuilder(bucket.getKey());
-		if (bucket.getKey().charAt(bucket.getKey().length() - 1) == '1') {
-			key.setCharAt(bucket.getKey().length() - 1, '0');
-		} else {
-			key.setCharAt(bucket.getKey().length() - 1, '1');
-		}
-		Bucket secondBucket = this.buckets[Integer.parseInt(key.toString(), 2)];
+		// StringBuilder key = new StringBuilder(bucket.getKey());
+		// if (bucket.getKey().charAt(bucket.getKey().length() - 1) == '1') {
+		// key.setCharAt(bucket.getKey().length() - 1, '0');
+		// } else {
+		// key.setCharAt(bucket.getKey().length() - 1, '1');
+		// }
+		Bucket secondBucket = this.buckets[Integer.parseInt(bucket.getKey()) ^ 1];
+
 		bucket.setBlockName(secondBucket.getBlockName());
 		Block block = bucket.getBlock();
 		block.setBitsCompared(block.getBitsCompared() - 1);
 		block.save();
 
-		this.shrinkDirectory();
+		// this.shrinkDirectory();
 	}
 
 	private boolean lessBitsCompared() {
@@ -200,7 +201,7 @@ class Directory implements Serializable {
 					+ block.getBitsCompared() + " : " + block.getSize());
 			ArrayList<Hashtable<String, String>> indexes = block.getIndexes();
 			for (Hashtable<String, String> index : indexes) {
-				System.out.println("        "+index);
+				System.out.println("        " + index);
 			}
 		}
 		System.out.println();
@@ -339,7 +340,7 @@ class Block implements Serializable {
 	public void setBitsCompared(int bitsCompared) {
 		this.bitsCompared = bitsCompared;
 	}
-	
+
 	public ArrayList<Hashtable<String, String>> getIndexes() {
 		return this.indexes;
 	}
@@ -361,6 +362,12 @@ public class ExtensibleHashtable implements Serializable {
 	public void addIndex(Hashtable<String, String> index) {
 		this.directory.insertIndex(index);
 		this.save();
+	}
+	
+	public void addIndexes(Hashtable<String, String>[] indexes) {
+//		for (Hashtable<String, String> index : indexes) {
+//		}
+//		this.save();
 	}
 
 	public Hashtable<String, String> getIndex(String value) {
@@ -410,24 +417,31 @@ public class ExtensibleHashtable implements Serializable {
 	public String getIndexName() {
 		return indexName;
 	}
-	
+
 	public Directory getDirectory() {
 		return this.directory;
 	}
 
 	public static void main(String[] args) {
-		 ExtensibleHashtable index = new ExtensibleHashtable();
-//		ExtensibleHashtable index = ExtensibleHashtable
-//				.load("20dbb6e7-6136-4113-8101-3f71667aa604");
-		// ExtensibleHashtable.delete("00ee7886-1934-4656-9b50-cc520e91713a");
-		 int i = 40;
-		 while (i-- > 0) {
-		 Hashtable<String, String> key = new Hashtable<String, String>();
-		 key.put("value", "" + i);
-		 index.addIndex(key);
-		 }
-		index.directory.print();
+		ExtensibleHashtable index = new ExtensibleHashtable();
+		// ExtensibleHashtable index = ExtensibleHashtable
+		// .load("20dbb6e7-6136-4113-8101-3f71667aa604");
+		index.getDirectory().splitDirectory();
+		index.getDirectory().splitBlock(index.getDirectory().getBuckets()[1]);
+		// index.getDirectory().shrinkBlock(index.getDirectory().getBuckets()[1]);
+		// ExtensibleHashtable.delete("20dbb6e7-6136-4113-8101-3f71667aa604");
+		// int i = 40;
+		// while (i-- > 0) {
+		// Hashtable<String, String> key = new Hashtable<String, String>();
+		// key.put("value", "" + i);
+		// index.addIndex(key);
+		// }
 		// index.directory.print();
+		index.save();
+		index.directory.print();
+
+		// System.out.println(Integer.toBinaryString(5 ^ 1));
+		ExtensibleHashtable.delete(index.getIndexName());
 	}
 
 }
