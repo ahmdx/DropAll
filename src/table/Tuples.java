@@ -4,7 +4,7 @@ public class Tuples {
 	private int index, page;
 	private String key;
 
-	public Tuples(int page, int index, String Key) {
+	public Tuples(int page, int index, String key) {
 		this.index = index;
 		this.page = page;
 		this.key = key;
