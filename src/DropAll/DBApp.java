@@ -69,7 +69,7 @@ public class DBApp implements DBMainInterface {
 	public void createMultiDimIndex(String strTableName,
 			Hashtable<String, String> htblColNames) throws DBAppException {
 		// TODO Auto-generated method stub
-//		this.tablesController.crea
+		this.tablesController.createMultiDimIndex(strTableName, htblColNames);
 	}
 
 	@Override
