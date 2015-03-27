@@ -1,4 +1,4 @@
-package main;
+package DropAll;
 
 import java.io.File;
 import java.util.Hashtable;

@@ -4,7 +4,6 @@ import index.ExtensibleHashtable;
 
 import java.io.*;
 import java.util.*;
-import java.util.Map.Entry;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import page.Page;
@@ -20,7 +19,7 @@ public class TablesController implements Serializable {
 	private Hashtable<String, String> tableReferences;
 	private ArrayList<Table> allTables = new ArrayList<Table>();
 	private Table tableObject;
-	private File csvFile = new File("metaFile.csv");
+	private File csvFile = new File("metadata.csv");
 
 	public TablesController() {
 	}
@@ -876,75 +875,5 @@ public class TablesController implements Serializable {
 		}
 	}
 
-	public static void main(String[] args) throws DBAppException, IOException {
-
-		TablesController t = new TablesController();
-		// t.allTables.clear();
-		Hashtable<String, String> cols = new Hashtable<String, String>();
-		cols.put("ID", "int");
-		cols.put("name", "varchar");
-		cols.put("DOB", "date");
-
-		Hashtable<String, String> refs = new Hashtable<String, String>();
-		refs.put("name", "user.fname");
-		refs.put("ID", "employee.ID");
-		// t=load();
-		// t.createTable("demo", cols, null, "name");
-		// t.createTable("demo", cols, null, "name");
-
-		Hashtable<String, String> val = new Hashtable<String, String>();
-
-		/*
-		 * val.put("ID", "1"); val.put("name", "soso"); val.put("DOB",
-		 * "13/22/3333");
-		 */
-		t = load();
-		// t.insertIntoTable("demo", val);
-
-		/*
-		 * val.put("ID", "2"); val.put("name", "sasso"); val.put("DOB",
-		 * "13/22/3333"); t.insertIntoTable("demo", val);
-		 */
-		/*
-		 * val.put("ID", "3"); val.put("name", "soso"); val.put("DOB",
-		 * "13/22/3333");
-		 * 
-		 * t.insertIntoTable("demo", val);
-		 */
-		//	t.createIndex("demo", "name");
-		// System.out.println(t.allTables.get(t.searchArraylist("demo")).getControlwent
-		// here"ler().getCurrentPage());
-
-		// t=load();
-		// t.insertIntoTable("demo", val);
-
-		int index = t.searchArraylist("demo");
-
-		Hashtable<String, String> x = new Hashtable<String, String>();
-		x.put("DOB", "1/22/3333");
-		// x.put("name", "sasso");
-
-
-		try { Iterator i= t.selectFromTable("demo", x, "null");
-		System.out.println(i.hasNext()); 
-
-		for(int z =0 ; i.hasNext() != false; z++){ i.next();
-		System.out.println(z); } if(i == null) System.out.println(232);
-
-		} catch (DBEngineException e) { 
-			e.printStackTrace();
-
-		}
-
-		/*
-		 * try { t.deleteFromTable("demo", x, "and"); } catch (DBEngineException
-		 * e) { // TODO Auto-generated catch block e.printStackTrace(); }
-		 */
-		// System.out.println(t.allTables.get(index).getColTypes().toString());
-
-		System.out.println(t.allTables.get(t.searchArraylist("demo"))
-				.getController().getCurrentPage());
-
-	} // System.out.println(bracstrOperator.equals("OR"))eRemover(hashValues[0].trim()));
 
 }
