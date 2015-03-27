@@ -22,12 +22,13 @@ public class TablesController implements Serializable {
 	private File csvFile = new File("metadata.csv");
 
 	public TablesController() {
+		this.save();
 	}
 
 	public void createTable(String strTableName,
 			Hashtable<String, String> htblColNameType,
 			Hashtable<String, String> htblColNameRefs, String strKeyColName)
-					throws DBAppException {
+			throws DBAppException {
 
 		int index = searchArraylist(strTableName);
 		if (index != -1) {
@@ -113,30 +114,31 @@ public class TablesController implements Serializable {
 			hashValues = keyValue[i].split("=");
 			if (formatChecker(
 					this.allTables.get(index).getColTypes()
-					.get(braceRemover(hashValues[0].trim())),
+							.get(braceRemover(hashValues[0].trim())),
 					braceRemover(hashValues[1].trim())) != "true") {
 
 				throw new DBAppException(formatChecker(
 						this.allTables.get(index).getColTypes()
-						.get(braceRemover(hashValues[0].trim())),
+								.get(braceRemover(hashValues[0].trim())),
 						braceRemover(hashValues[1].trim()))
 						+ " in: " + braceRemover(hashValues[0].trim()) + "\n");
 			}
 		}
 
-		
 		try {
-			if(pkChecker(strTableName, htblColNameValue, index)){
-				throw new DBAppException("The values:\""+htblColNameValue.toString()+"\" you are trying to insert already exist in:\""+strTableName+"\"");
+			if (pkChecker(strTableName, htblColNameValue, index)) {
+				throw new DBAppException("The values:\""
+						+ htblColNameValue.toString()
+						+ "\" you are trying to insert already exist in:\""
+						+ strTableName + "\"");
 			}
-			
+
 			allTables.get(index).getController().writeToPage(htblColNameValue);
 		} catch (DBEngineException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		
-		
+
 		if (this.allTables.get(index).getColSingleIndexName().size() > 0) {
 			String[] indexTable = this.allTables.get(index)
 					.getColSingleIndexName().toString().split(",");
@@ -159,7 +161,7 @@ public class TablesController implements Serializable {
 
 	public void insertIntoTable(String strTableName,
 			ArrayList<Hashtable<String, String>> htblColNameValue)
-					throws DBAppException {
+			throws DBAppException {
 
 		int index = searchArraylist(strTableName);
 		String[] keyValue;
@@ -184,7 +186,7 @@ public class TablesController implements Serializable {
 
 					throw new DBAppException(formatChecker(
 							this.allTables.get(index).getColTypes()
-							.get(braceRemover(hashValues[0].trim())),
+									.get(braceRemover(hashValues[0].trim())),
 							braceRemover(hashValues[1].trim()))
 							+ " in: "
 							+ braceRemover(hashValues[0].trim())
@@ -199,7 +201,7 @@ public class TablesController implements Serializable {
 
 	public void deleteFromTable(String strTableName,
 			Hashtable<String, String> htblColNameValue, String strOperator)
-					throws DBEngineException {
+			throws DBEngineException {
 		int index = searchArraylist(strTableName);
 		String[] keyValue = htblColNameValue.toString().split(",");
 		String[] hashValues;
@@ -225,12 +227,12 @@ public class TablesController implements Serializable {
 			hashValues = keyValue[i].split("=");
 			if (formatChecker(
 					this.allTables.get(index).getColTypes()
-					.get(braceRemover(hashValues[0].trim())),
+							.get(braceRemover(hashValues[0].trim())),
 					braceRemover(hashValues[1].trim())) != "true") {
 
 				throw new DBEngineException(formatChecker(
 						this.allTables.get(index).getColTypes()
-						.get(braceRemover(hashValues[0].trim())),
+								.get(braceRemover(hashValues[0].trim())),
 						braceRemover(hashValues[1].trim()))
 						+ " in: " + braceRemover(hashValues[0].trim()) + "\n");
 			}
@@ -264,10 +266,10 @@ public class TablesController implements Serializable {
 				if (pageIndex.get(i).getKey().contains(key)
 						|| pageIndex.get(i).getKey().contains(reverser(key))) {
 					this.allTables
-					.get(index)
-					.getController()
-					.deleteFromPage(pageIndex.get(i).getPage(),
-							pageIndex.get(i).getIndex());
+							.get(index)
+							.getController()
+							.deleteFromPage(pageIndex.get(i).getPage(),
+									pageIndex.get(i).getIndex());
 				}
 			}
 		}
@@ -281,10 +283,10 @@ public class TablesController implements Serializable {
 
 			for (int i = 0; i < pageIndex.size(); i++) {
 				this.allTables
-				.get(index)
-				.getController()
-				.deleteFromPage(pageIndex.get(i).getPage(),
-						pageIndex.get(i).getIndex());
+						.get(index)
+						.getController()
+						.deleteFromPage(pageIndex.get(i).getPage(),
+								pageIndex.get(i).getIndex());
 			}
 		}
 		this.save();
@@ -293,7 +295,7 @@ public class TablesController implements Serializable {
 
 	public Iterator<Tuples> selectFromTable(String strTable,
 			Hashtable<String, String> htblColNameValue, String strOperator)
-					throws DBEngineException {
+			throws DBEngineException {
 
 		int index = searchArraylist(strTable);
 		// String[] nameType =
@@ -330,12 +332,12 @@ public class TablesController implements Serializable {
 			hashValues = keyValue[i].split("=");
 			if (formatChecker(
 					this.allTables.get(index).getColTypes()
-					.get(braceRemover(hashValues[0].trim())),
+							.get(braceRemover(hashValues[0].trim())),
 					braceRemover(hashValues[1].trim())) != "true") {
 
 				throw new DBEngineException(formatChecker(
 						this.allTables.get(index).getColTypes()
-						.get(braceRemover(hashValues[0].trim())),
+								.get(braceRemover(hashValues[0].trim())),
 						braceRemover(hashValues[1].trim()))
 						+ " in: " + braceRemover(hashValues[0].trim()) + "\n");
 			}
@@ -370,8 +372,8 @@ public class TablesController implements Serializable {
 
 			for (int i = 0; i < pageIndex.size(); i++) {
 				this.allTables.get(index).getController()
-				.getPage(pageIndex.get(i).getPage())
-				.read(pageIndex.get(i).getIndex());
+						.getPage(pageIndex.get(i).getPage())
+						.read(pageIndex.get(i).getIndex());
 
 			}
 			return iter = pageIndex.iterator();
@@ -385,8 +387,8 @@ public class TablesController implements Serializable {
 
 			for (int i = 0; i < pageIndex.size(); i++) {
 				this.allTables.get(index).getController()
-				.getPage(pageIndex.get(i).getPage())
-				.read(pageIndex.get(i).getIndex());
+						.getPage(pageIndex.get(i).getPage())
+						.read(pageIndex.get(i).getIndex());
 
 			}
 			String key = keyGenerator(htblColNameValue);
@@ -466,7 +468,7 @@ public class TablesController implements Serializable {
 
 		ExtensibleHashtable extHashtable = new ExtensibleHashtable();
 		this.allTables.get(index).getColSingleIndexName()
-		.put(strColName, extHashtable.getIndexName());
+				.put(strColName, extHashtable.getIndexName());
 		ArrayList<Tuples> pageIndex;
 		ArrayList<Hashtable<String, String>> colVal = new ArrayList<Hashtable<String, String>>(); // values
 		// of
@@ -511,8 +513,8 @@ public class TablesController implements Serializable {
 
 		for (int i = 0; i < pageIndex.size(); i++) {
 			this.allTables.get(index).getController()
-			.getPage(pageIndex.get(i).getPage())
-			.read(pageIndex.get(i).getIndex());
+					.getPage(pageIndex.get(i).getPage())
+					.read(pageIndex.get(i).getIndex());
 
 		}
 
@@ -612,19 +614,22 @@ public class TablesController implements Serializable {
 		return concat;
 	}
 
-	private boolean pkChecker(String strTableName, Hashtable<String, String> htblColNameValue, int index) throws DBEngineException {
+	private boolean pkChecker(String strTableName,
+			Hashtable<String, String> htblColNameValue, int index)
+			throws DBEngineException {
 		String operator = "";
-		if(htblColNameValue.size() == 1){
-			 operator = "null";
-		} else { 
-			if(htblColNameValue.size() > 1){
+		if (htblColNameValue.size() == 1) {
+			operator = "null";
+		} else {
+			if (htblColNameValue.size() > 1) {
 				operator = "and";
-			} 
+			}
 		}
 
-		Iterator<Tuples> i = selectFromTable(strTableName, htblColNameValue, operator);
-		
-		if(!i.hasNext()){
+		Iterator<Tuples> i = selectFromTable(strTableName, htblColNameValue,
+				operator);
+
+		if (!i.hasNext()) {
 			return false;
 		} else {
 
@@ -852,7 +857,7 @@ public class TablesController implements Serializable {
 	public final boolean save() {
 		try {
 			ObjectOutputStream oos = new ObjectOutputStream(
-					new FileOutputStream(new File("tableController.table")));
+					new FileOutputStream(new File("data/tableController.table")));
 			oos.writeObject(this);
 			oos.close();
 		} catch (IOException e) {
@@ -864,7 +869,7 @@ public class TablesController implements Serializable {
 	public static final TablesController load() {
 		try {
 			ObjectInputStream ois = new ObjectInputStream(new FileInputStream(
-					new File("tableController.table")));
+					new File("data/tableController.table")));
 			TablesController tc = (TablesController) ois.readObject();
 			ois.close();
 			return tc;
@@ -874,6 +879,5 @@ public class TablesController implements Serializable {
 
 		}
 	}
-
 
 }

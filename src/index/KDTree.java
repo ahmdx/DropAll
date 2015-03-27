@@ -572,10 +572,5 @@ public class KDTree implements Serializable {
 		System.out.println();
 //		tree.print();
 		KDTree.delete(tree.getIndexName());
-//		String[] strings = {"1", "2", "3", "4", "5", "6", "7",};
-//		Arrays.sort(strings);
-//		System.out.println(strings.toString());
-		
-//		System.out.println("".compareTo("3"));
 	}
 }
