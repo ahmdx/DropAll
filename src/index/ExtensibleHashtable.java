@@ -301,7 +301,7 @@ class Block implements Serializable {
 	public String save() {
 		try {
 			ObjectOutputStream oos = new ObjectOutputStream(
-					new FileOutputStream(new File("pages/" + this.blockName
+					new FileOutputStream(new File("data/pages/" + this.blockName
 							+ ".page")));
 			oos.writeObject(this);
 			oos.close();
@@ -315,7 +315,7 @@ class Block implements Serializable {
 	public static Block load(String blockName) {
 		try {
 			ObjectInputStream ois = new ObjectInputStream(new FileInputStream(
-					new File("pages/" + blockName + ".page")));
+					new File("data/pages/" + blockName + ".page")));
 			Block block = (Block) ois.readObject();
 			ois.close();
 			return block;
@@ -325,7 +325,7 @@ class Block implements Serializable {
 	}
 
 	public void delete() {
-		File f = new File("pages/" + this.blockName + ".page");
+		File f = new File("data/pages/" + this.blockName + ".page");
 		f.delete();
 	}
 
@@ -383,7 +383,7 @@ public class ExtensibleHashtable implements Serializable {
 	public void save() {
 		try {
 			ObjectOutputStream oos = new ObjectOutputStream(
-					new FileOutputStream(new File("indexes/" + this.indexName
+					new FileOutputStream(new File("data/indexes/" + this.indexName
 							+ ".index")));
 			oos.writeObject(this);
 			oos.close();
@@ -395,7 +395,7 @@ public class ExtensibleHashtable implements Serializable {
 	public static ExtensibleHashtable load(String indexName) {
 		try {
 			ObjectInputStream ois = new ObjectInputStream(new FileInputStream(
-					new File("indexes/" + indexName + ".index")));
+					new File("data/indexes/" + indexName + ".index")));
 			ExtensibleHashtable index = (ExtensibleHashtable) ois.readObject();
 			ois.close();
 			return index;
@@ -411,7 +411,7 @@ public class ExtensibleHashtable implements Serializable {
 			if (bucket.getBlock() != null)
 				bucket.getBlock().delete();
 		}
-		File f = new File("indexes/" + indexName + ".index");
+		File f = new File("data/indexes/" + indexName + ".index");
 		return f.delete();
 	}
 
