@@ -81,7 +81,7 @@ class KDNode implements Serializable {
 
 class KDBlock implements Serializable {
 	private static final long serialVersionUID = 1L;
-	private int blockSize = 5;
+	private int blockSize = 25;
 	private ArrayList<Hashtable<String, String>> indexes = new ArrayList<Hashtable<String, String>>();
 	private String blockName;
 
@@ -220,7 +220,6 @@ public class KDTree implements Serializable {
 	}
 
 	private String getMedian(KDBlock block, String key, String value) {
-		System.out.println(block);
 		String[] strings = new String[block.getSize() + 1];
 		ArrayList<Hashtable<String, String>> indexes = block.getIndexes();
 		int i = 0;
@@ -286,19 +285,22 @@ public class KDTree implements Serializable {
 			this.ditributeKeys(block, newBlock, this.keys.get(nextLevel % k),
 					newNode.getKey());
 			target = KDBlock.load(this.getTargetBlock(index));
-			if (!target.isFull())
+			if (!target.isFull()) {
+				System.out.println("INSERT");
 				target.addKey(index);
+				target.save();
+			}
 		} while (target.isFull());
 	}
 
 	private void insertIntoBlock(KDNode node, int side,
 			Hashtable<String, String> index) {
-		System.out.println("INSERT");
 		KDBlock block = (side == -1) ? node.getBlock(node.getLeftBlock())
 				: node.getBlock(node.getRightBlock());
 		if (block.isFull()) {
 			this.splitBlock(node, side, index);
 		} else {
+			System.out.println("INSERT");
 			block.addKey(index);
 			block.save();
 		}
@@ -555,6 +557,13 @@ public class KDTree implements Serializable {
 			index.put("age", "" + i);
 			tree.insertIndex(index);
 		}
+//		i = x;
+//		while (i-- > 0) {
+//			index = new Hashtable<String, String>();
+//			index.put("name", "name #" + i);
+//			index.put("age", "" + i);
+//			tree.deleteIndex(index);
+//		}
 		i = x;
 		while (i-- > 0) {
 			index = new Hashtable<String, String>();
@@ -568,7 +577,7 @@ public class KDTree implements Serializable {
 		System.out.println(KDTree.delete(tree.getIndexName()));
 
 		System.out.println();
-		tree.print();
+//		tree.print();
 		KDTree.delete(tree.getIndexName());
 //		String[] strings = {"1", "2", "3", "4", "5", "6", "7",};
 //		Arrays.sort(strings);
