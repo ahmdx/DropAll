@@ -1,11 +1,13 @@
 package table;
 
 import index.ExtensibleHashtable;
+import index.KDTree;
 
 import java.io.*;
 import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
 import page.Page;
 import exceptions.DBAppException;
 import exceptions.DBEngineException;
@@ -496,6 +498,95 @@ public class TablesController implements Serializable {
 
 		this.save();
 
+	}
+
+	public void createMultiDimIndex(String strTableName,
+			Hashtable<String, String> htblColNames) throws DBAppException {
+		ArrayList<String> columns = new ArrayList<String>();
+
+		String[] htblCol = htblColNames.toString().split(",");
+		String[] colIndex;
+		for (int i = 0; i < htblCol.length; i++) {
+			colIndex = htblCol[i].split("=");
+			columns.add(braceRemover(colIndex[0].trim()));
+		}
+		multiDimIndex(strTableName, columns);
+
+	}
+
+	private void multiDimIndex(String strTableName, ArrayList<String> colNames)
+			throws DBAppException {
+		int index = searchArraylist(strTableName);
+		if (index == -1) {
+			throw new DBAppException("Table name:\"" + strTableName
+					+ " \"does not exist");
+		}
+
+		for (int i = 0; i < colNames.size(); i++) {
+			if (!this.allTables.get(index).getColTypes()
+					.containsKey(colNames.get(i))) {
+				throw new DBAppException("Column: \"" + colNames.get(i)
+						+ " \"does not exist in table: \"" + strTableName
+						+ "\"");
+
+			}
+		}
+		for (int i = 0; i < this.allTables.get(index).getMultiIndex().size(); i++) {
+			for (int j = 0; j < colNames.size(); j++) {
+				if (this.allTables.get(index).getMultiIndex().get(i).getCols()
+						.contains(colNames.get(j))) {
+					throw new DBAppException("Column: \"" + colNames.get(j)
+							+ "\" in table: \"" + strTableName
+							+ "\" is already indexed");
+
+				}
+			}
+		}
+
+		BufferedReader br;
+		String line = "";
+		String input = "";
+		try {
+			br = new BufferedReader(new FileReader(csvFile));
+			for (int j = 0; j < formatList.length; j++) {
+
+				while ((line = br.readLine()) != null) {
+					String[] column = line.split(",");
+
+					if (column[0].trim().equals(strTableName)
+							&& column[2].trim().equals(colNames.get(j))) {
+						column[4] = " True";
+
+						line = "";
+						for (int i = 0; i < column.length; i++) {
+							if (i == column.length - 1) {
+								line += column[i];
+							} else {
+								line += column[i] + ",";
+							}
+						}
+					}
+					input += line + '\n';
+				}
+
+				FileOutputStream fileOut = new FileOutputStream(csvFile);
+				fileOut.write(input.getBytes());
+				fileOut.close();
+				br.close();
+			}
+		} catch (FileNotFoundException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		} catch (IOException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
+		
+		KDTree k = new KDTree(colNames);
+		IndexTuple it = new IndexTuple(colNames, k.getIndexName());
+		this.allTables.get(index).getMultiIndex().add(it);
+		
+		this.save();
 	}
 
 	public ArrayList<Tuples> columnProject(String strTable, String column) {
