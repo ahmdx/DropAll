@@ -15,7 +15,7 @@ public class Table implements Serializable {
 	private Hashtable<String, String> colRefs;
 	private ArrayList<String> colPK;
 	private Hashtable<String, String> colSingleIndexName;
-	private Hashtable<String, String> colMultiIndexName;
+	private ArrayList<IndexTuple> multiIndex;
 	
 
 	public Table(String name, Hashtable<String, String> t,
@@ -27,7 +27,7 @@ public class Table implements Serializable {
 		this.colRefs = r;
 		this.colPK = new ArrayList<String>();
 		this.colSingleIndexName = new Hashtable<String, String>();
-		this.colMultiIndexName= new Hashtable<String, String>();
+		this.multiIndex= new ArrayList<IndexTuple>();
 	}
 
 	public PageController getController() {
@@ -71,15 +71,13 @@ public class Table implements Serializable {
 		this.colSingleIndexName = colSingleIndexName;
 	}
 
-	public Hashtable<String, String> getColMultiIndexName() {
-		return colMultiIndexName;
+	public ArrayList<IndexTuple> getMultiIndex() {
+		return multiIndex;
 	}
 
-	public void setColMultiIndexName(Hashtable<String, String> colMultiIndexName) {
-		this.colMultiIndexName = colMultiIndexName;
+	public void setMultiIndex(ArrayList<IndexTuple> multiIndex) {
+		this.multiIndex = multiIndex;
 	}
 
-	
 
-	
 }
