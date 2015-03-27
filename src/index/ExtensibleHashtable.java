@@ -374,9 +374,6 @@ public class ExtensibleHashtable implements Serializable {
 		return this.directory.getIndex(value);
 	}
 
-	public Directory getDirectory() { 
-		return this.directory; 
-		}
 	
 	public void deleteIndex(String value) {
 		this.directory.deleteIndex(value);
