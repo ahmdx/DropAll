@@ -50,7 +50,7 @@ public class Page implements Serializable {
 	public final boolean save() {
 		try {
 			ObjectOutputStream oos = new ObjectOutputStream(
-					new FileOutputStream(new File("pages/" + this.pageName
+					new FileOutputStream(new File("data/pages/" + this.pageName
 							+ ".page")));
 			oos.writeObject(this);
 			oos.close();
@@ -63,7 +63,7 @@ public class Page implements Serializable {
 	public static final Page load(String pageName) {
 		try {
 			ObjectInputStream ois = new ObjectInputStream(new FileInputStream(
-					new File("pages/" + pageName + ".page")));
+					new File("data/pages/" + pageName + ".page")));
 			Page page = (Page) ois.readObject();
 			ois.close();
 			return page;
@@ -73,7 +73,7 @@ public class Page implements Serializable {
 	}
 
 	public static final boolean delete(String pageName) {
-		File f = new File("pages/" + pageName + ".page");
+		File f = new File("data/pages/" + pageName + ".page");
 		return f.delete();
 	}
 

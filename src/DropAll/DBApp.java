@@ -29,8 +29,9 @@ public class DBApp implements DBMainInterface{
 	@Override
 	public void init() {
 		// TODO Auto-generated method stub
-		this.createDirectory("pages");
-		this.createDirectory("indexes");
+		this.createDirectory("data");
+		this.createDirectory("data/pages");
+		this.createDirectory("data/indexes");
 	}
 
 	@Override

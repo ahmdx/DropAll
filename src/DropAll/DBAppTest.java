@@ -50,7 +50,7 @@ public class DBAppTest {
 		// t=load();
 		// t.insertIntoTable("demo", val);
 
-		int index = t.searchArraylist("demo");
+	//	int index = t.searchArraylist("demo");
 
 		Hashtable<String, String> x = new Hashtable<String, String>();
 		x.put("DOB", "1/22/3333");
@@ -74,8 +74,8 @@ public class DBAppTest {
 		 */
 		// System.out.println(t.allTables.get(index).getColTypes().toString());
 
-		System.out.println(t.allTables.get(t.searchArraylist("demo"))
-				.getController().getCurrentPage());
+		//System.out.println(t.allTables.get(t.searchArraylist("demo"))
+			//	.getController().getCurrentPage());
 
 	 // System.out.println(bracstrOperator.equals("OR"))eRemover(hashValues[0].trim()));
 
