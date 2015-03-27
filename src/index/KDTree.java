@@ -229,6 +229,8 @@ public class KDTree implements Serializable {
 		}
 		strings[block.getSize()] = value;
 		Arrays.sort(strings);
+		System.out.println(key);
+		System.out.println(Arrays.deepToString(strings));
 		i = strings.length;
 		return (i % 2 == 0) ? strings[(i / 2) + 1] : strings[i / 2];
 	}
@@ -511,6 +513,8 @@ public class KDTree implements Serializable {
 			index.put("age", "" + i);
 			System.out.println("Found: " + tree.getIndex(index));
 		}
-		KDTree.delete(tree.getIndexName());
+	
+		
+		System.out.println(KDTree.delete(tree.getIndexName()));
 	}
 }
