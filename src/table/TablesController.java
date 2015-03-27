@@ -364,8 +364,29 @@ public class TablesController implements Serializable {
 		 * pageIndex.add(); }
 		 */
 
+		String indexedCol = ""; 
 		if (strOperator.toLowerCase().trim().equals("or")
 				|| strOperator.toLowerCase().trim().equals("null")) {
+			
+			/*for (int i = 0; i < keyValue.length; i++) {
+				hashValues = keyValue[i].split("=");
+				
+			
+			if(this.allTables.get(index).getColSingleIndexName().containsKey(braceRemover(hashValues[0].trim()))){
+				indexedCol=braceRemover(hashValues[0].trim());
+				break;
+			}
+					
+			}
+			
+			if(indexedCol != ""){
+				String extHash = this.allTables.get(index).getColSingleIndexName().get(indexedCol);
+				ExtensibleHashtable ext = ExtensibleHashtable.load(extHash);
+				
+				
+			}*/
+			
+			
 			for (int i = 0; i < allPagesCount; i++) {
 				pageORSearcher(this.allTables.get(index).getController()
 						.getPage(i), htblColNameValue, i, pageIndex);
