@@ -24,6 +24,7 @@ public class TablesController implements Serializable {
 	private File csvFile = new File("metadata.csv");
 
 	public TablesController() {
+		this.save();
 	}
 
 	public void createTable(String strTableName,
@@ -968,7 +969,7 @@ public class TablesController implements Serializable {
 	public final boolean save() {
 		try {
 			ObjectOutputStream oos = new ObjectOutputStream(
-					new FileOutputStream(new File("tableController.table")));
+					new FileOutputStream(new File("data/tableController.table")));
 			oos.writeObject(this);
 			oos.close();
 		} catch (IOException e) {
@@ -980,7 +981,7 @@ public class TablesController implements Serializable {
 	public static final TablesController load() {
 		try {
 			ObjectInputStream ois = new ObjectInputStream(new FileInputStream(
-					new File("tableController.table")));
+					new File("data/tableController.table")));
 			TablesController tc = (TablesController) ois.readObject();
 			ois.close();
 			return tc;
