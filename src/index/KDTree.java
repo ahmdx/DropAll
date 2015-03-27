@@ -572,10 +572,6 @@ public class KDTree implements Serializable {
 			System.out.println("Found: " + tree.getIndex(index));
 		}
 
-	
-		
-		System.out.println(KDTree.delete(tree.getIndexName()));
-
 		System.out.println();
 //		tree.print();
 		KDTree.delete(tree.getIndexName());

@@ -2,6 +2,7 @@ package DropAll;
 
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.io.InputStream;
 import java.util.Hashtable;
 import java.util.Iterator;
@@ -13,6 +14,10 @@ import exceptions.DBEngineException;
 
 public class DBApp implements DBMainInterface {
 	private TablesController tablesController;
+	
+	public TablesController getTablesController() {
+		return this.tablesController;
+	}
 
 	public static void main(String[] args) throws Exception {
 		// TODO Auto-generated method stub
@@ -97,16 +102,17 @@ public class DBApp implements DBMainInterface {
 		this.tablesController.save();
 	}
 	
-	public String getPropValues() throws Exception {
+	public String getPropValues() {
 		Properties prop = new Properties();
-		String propFileName = "config/DBApp.properties";
+		String propFileName = "/config/DBApp.properties";
  
-		InputStream inputStream = getClass().getClassLoader().getResourceAsStream(propFileName);
+//		InputStream inputStream = getClass().getResourceAsStream(propFileName);
  
-		if (inputStream != null) {
-			prop.load(inputStream);
-		} else {
-			throw new FileNotFoundException("property file '" + propFileName + "' not found in the classpath");
+		try {
+			prop.load(getClass().getResourceAsStream(propFileName));
+		} catch (IOException e) {
+//			throw new FileNotFoundException("property file '" + propFileName + "' not found in the classpath");
+			e.printStackTrace();
 		}
 		String maxRows = prop.getProperty("MaximumRowsCountinPage");
 		return maxRows;

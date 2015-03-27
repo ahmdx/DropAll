@@ -9,6 +9,8 @@ import exceptions.DBEngineException;
 public class DBAppTest {
 
 	public static void main(String[] args) {
+		
+		DBApp app = new DBApp();
 
 		TablesController t = new TablesController();
 		// t.allTables.clear();
