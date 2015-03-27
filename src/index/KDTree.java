@@ -81,13 +81,15 @@ class KDNode implements Serializable {
 
 class KDBlock implements Serializable {
 	private static final long serialVersionUID = 1L;
-	private int blockSize = 20;
+	private int blockSize = 25;
 	private ArrayList<Hashtable<String, String>> indexes = new ArrayList<Hashtable<String, String>>();
 	private String blockName;
 
 	public KDBlock() {
 		UUID uuid = UUID.randomUUID(); // generates a unique identifier
 		this.blockName = uuid.toString();
+		System.out.println("BLOCK____________________________ "
+				+ this.blockName);
 	}
 
 	public void addKey(Hashtable<String, String> key) {
@@ -155,8 +157,8 @@ class KDBlock implements Serializable {
 	public String save() {
 		try {
 			ObjectOutputStream oos = new ObjectOutputStream(
-					new FileOutputStream(new File("data/pages/" + this.blockName
-							+ ".page")));
+					new FileOutputStream(new File("data/pages/"
+							+ this.blockName + ".page")));
 			oos.writeObject(this);
 			oos.close();
 		} catch (IOException e) {
@@ -205,6 +207,7 @@ public class KDTree implements Serializable {
 	}
 
 	private KDNode initNode(String key, int level) {
+		System.out.println("INIT___________--------------_________________");
 		KDNode node = new KDNode(key);
 		node.setLevel(level);
 		KDBlock leftBlock = new KDBlock();
@@ -233,104 +236,120 @@ public class KDTree implements Serializable {
 	private void ditributeKeys(KDBlock full, KDBlock empty, String key,
 			String nodeKey) {
 		ArrayList<Hashtable<String, String>> indexes = full.getIndexes();
-		for (int i = 0; i < full.getSize(); i++) {
-			Hashtable<String, String> index = indexes.get(i);
+		ArrayList<Hashtable<String, String>> temp = new ArrayList<Hashtable<String, String>>();
+		for (Hashtable<String, String> index : indexes) {
 			if (index.get(key).compareTo(nodeKey) == -1) {
-				// index < node key
 				empty.addKey(index);
-				full.removeKey(index);
+				temp.add(index);
 			}
+		}
+		for (Hashtable<String, String> hash : temp) {
+			full.removeKey(hash);
 		}
 		full.save();
 		empty.save();
 	}
 
 	private void splitBlock(KDNode node, int side,
-			Hashtable<String, String> value) {
-		KDBlock block;
-		KDBlock newBlock = new KDBlock();
-		int nextLevel = node.getLevel() + 1;
-		System.out.println("NEXT: " + nextLevel);
+			Hashtable<String, String> index) {
+		KDBlock block, newBlock, target;
+		int nextLevel;
 		KDNode newNode;
+		// do {
+		newBlock = new KDBlock();
+		nextLevel = node.getLevel() + 1;
 		if (side == -1) {
 			// Left node
 			block = node.getBlock(node.getLeftBlock());
+			System.out.println("--------------------------"
+					+ node.getLeftBlock());
 			newNode = new KDNode(this.getMedian(block,
 					this.keys.get(nextLevel % k),
-					value.get(this.keys.get(nextLevel % k))));
+					index.get(this.keys.get(nextLevel % k))));
 			newNode.setLevel(nextLevel);
 			node.setLeftNode(newNode);
 			node.setLeftBlock(null);
 		} else {
 			block = node.getBlock(node.getRightBlock());
+			System.out.println("--------------------------"
+					+ node.getRightBlock());
+			System.out.println("--------------------------"
+					+ node.getLeftBlock());
 			newNode = new KDNode(this.getMedian(block,
 					this.keys.get(nextLevel % k),
-					value.get(this.keys.get(nextLevel % k))));
+					index.get(this.keys.get(nextLevel % k))));
 			newNode.setLevel(nextLevel);
 			node.setRightNode(newNode);
 			node.setRightBlock(null);
 		}
-		newNode.setRightBlock(block.getBlockName());
+		System.out.println((newNode == node) ? "YES" : "NO");
 		newNode.setLeftBlock(newBlock.getBlockName());
-
+		newNode.setRightBlock(block.getBlockName());
+		System.out.println("AFTER--------------------------"
+				+ node.getLeftBlock());
+		this.save();
 		this.ditributeKeys(block, newBlock, this.keys.get(nextLevel % k),
 				newNode.getKey());
+		target = KDBlock.load(this.getTargetBlock(index));
+		if (!target.isFull())
+			target.addKey(index);
+		// } while (target.isFull());
+	}
 
-		block.save();
-		newBlock.save();
-		this.save();
+	private void insertIntoBlock(KDNode node, int side,
+			Hashtable<String, String> index) {
+		System.out.println("INSERT");
+		KDBlock block = (side == -1) ? node.getBlock(node.getLeftBlock())
+				: node.getBlock(node.getRightBlock());
+		if (block.isFull()) {
+			this.splitBlock(node, side, index);
+		} else {
+			block.addKey(index);
+			block.save();
+		}
 	}
 
 	public void insertIndex(Hashtable<String, String> index) {
+		if (this.root == null) {
+			KDBlock block;
+			this.root = this.initNode(index.get(this.keys.get(0 % this.k)), 0);
+			block = this.root.getBlock(this.root.getRightBlock());
+			block.addKey(index);
+			block.save();
+			this.save();
+			return;
+		}
 		this.insertIndex(index, this.root, 0);
 		this.save();
 	}
 
 	private void insertIndex(Hashtable<String, String> index, KDNode node,
 			int level) {
-		if (node != null) {
-			if (node.isLeaf()) {
-				KDBlock block;
-				if (index.get(this.keys.get(level % this.k)).compareTo(
-						node.getKey()) == -1) {
-					// index value < node key
-					System.out.println("LEFT");
-					block = node.getBlock(node.getLeftBlock());
-					if (block.isFull()) {
-						System.out.println("LEFT FULL");
-						this.splitBlock(node, -1, index);
-					} else {
-						block.addKey(index);
-					}
-				} else {
-					System.out.println("RIGHT");
-					block = node.getBlock(node.getRightBlock());
-					if (block.isFull()) {
-						System.out.println("RIGHT FULL");
-						this.splitBlock(node, 1, index);
-					} else {
-						block.addKey(index);
-					}
-				}
-				block.save();
-				return;
+		if (node.isLeaf()) {
+			if (index.get(this.keys.get(level % this.k)).compareTo(
+					node.getKey()) == -1) {
+				// index value < node key
+				this.insertIntoBlock(node, -1, index);
 			} else {
-				if (index.get(this.keys.get(level % this.k)).compareTo(
-						node.getKey()) == -1) {
+				this.insertIntoBlock(node, 1, index);
+			}
+			return;
+		} else {
+			if (index.get(this.keys.get(level % this.k)).compareTo(
+					node.getKey()) == -1) {
+				if (node.getLeftNode() != null) {
 					this.insertIndex(index, node.getLeftNode(), ++level);
 				} else {
+					this.insertIntoBlock(node, -1, index);
+				}
+			} else {
+				if (node.getRightNode() != null) {
 					this.insertIndex(index, node.getRightNode(), ++level);
+				} else {
+					this.insertIntoBlock(node, 1, index);
 				}
 			}
-		} else {
-			KDBlock block;
-			node = this.initNode(index.get(this.keys.get(0 % this.k)), 0);
-			block = node.getBlock(node.getRightBlock());
-			block.addKey(index);
-			this.root = node;
-			block.save();
 		}
-
 	}
 
 	public Hashtable<String, String> getIndex(Hashtable<String, String> index) {
@@ -351,21 +370,31 @@ public class KDTree implements Serializable {
 	private String getTargetBlock(Hashtable<String, String> index, KDNode node,
 			int level) {
 		if (node.isLeaf()) {
-			KDBlock block;
+			// KDBlock block;
 			if (index.get(this.keys.get(level % this.k)).compareTo(
 					node.getKey()) == -1) {
-				block = node.getBlock(node.getLeftBlock());
-				return block.getBlockName();
+				// block = node.getBlock(node.getLeftBlock());
+				return node.getLeftBlock();
 			} else {
-				block = node.getBlock(node.getRightBlock());
-				return block.getBlockName();
+				// block = node.getBlock(node.getRightBlock());
+				return node.getRightBlock();
 			}
 		} else {
 			if (index.get(this.keys.get(level % this.k)).compareTo(
 					node.getKey()) == -1) {
-				return this.getTargetBlock(index, node.getLeftNode(), ++level);
+				if (node.getLeftNode() != null) {
+					return this.getTargetBlock(index, node.getLeftNode(),
+							++level);
+				} else {
+					return node.getLeftBlock();
+				}
 			} else {
-				return this.getTargetBlock(index, node.getRightNode(), ++level);
+				if (node.getRightNode() != null) {
+					return this.getTargetBlock(index, node.getRightNode(),
+							++level);
+				} else {
+					return node.getRightBlock();
+				}
 			}
 		}
 	}
@@ -393,8 +422,8 @@ public class KDTree implements Serializable {
 	public void save() {
 		try {
 			ObjectOutputStream oos = new ObjectOutputStream(
-					new FileOutputStream(new File("data/indexes/" + this.indexName
-							+ ".index")));
+					new FileOutputStream(new File("data/indexes/"
+							+ this.indexName + ".index")));
 			oos.writeObject(this);
 			oos.close();
 		} catch (IOException e) {
@@ -415,7 +444,6 @@ public class KDTree implements Serializable {
 	}
 
 	public static boolean delete(String indexName) {
-		// TODO complete implementation
 		KDTree tree = KDTree.load(indexName);
 		tree.deleteBlocks(tree.getRoot());
 		File f = new File("data/indexes/" + indexName + ".index");
@@ -442,7 +470,10 @@ public class KDTree implements Serializable {
 			node.getBlock(node.getRightBlock()).delete();
 			return;
 		}
-		deleteLeftBlock(node.getLeftNode());
+		if (node.getLeftNode() != null)
+			deleteLeftBlock(node.getLeftNode());
+		else
+			node.getBlock(node.getLeftBlock()).delete();
 	}
 
 	public void deleteRightBlock(KDNode node) {
@@ -453,7 +484,10 @@ public class KDTree implements Serializable {
 			node.getBlock(node.getRightBlock()).delete();
 			return;
 		}
-		deleteLeftBlock(node.getRightNode());
+		if (node.getRightNode() != null)
+			deleteRightBlock(node.getRightNode());
+		else
+			node.getBlock(node.getRightBlock()).delete();
 	}
 
 	public static void main(String[] args) {
